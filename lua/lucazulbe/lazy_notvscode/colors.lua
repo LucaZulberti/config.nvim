@@ -6,10 +6,6 @@ function ColorMyPencils(color)
 	vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 end
 
-vim.api.nvim_create_user_command("ColorMyPencils", function(opts)
-    ColorMyPencils(opts.args)
-end, { nargs = "?" })
-
 return {
 
     {
@@ -81,7 +77,8 @@ return {
         name = "rose-pine",
         config = function()
             require('rose-pine').setup({
-                disable_background = true,
+                variant = 'moon',
+                -- disable_background = true,
                 styles = {
                     italic = false,
                 },
