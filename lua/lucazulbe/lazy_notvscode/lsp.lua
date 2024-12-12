@@ -20,6 +20,8 @@ return {
             }
         })
 
+        vim.keymap.set("n", "<leader>zig", "<cmd>LspRestart<cr>", { desc = "Restart LSP" })
+
         local on_attach = function(client, bufnr)
             -- Buffer-local keybindings for LSP
             local opts = { noremap = true, silent = true, buffer = bufnr }

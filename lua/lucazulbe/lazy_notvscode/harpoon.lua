@@ -31,7 +31,7 @@ return {
         end
 
         vim.keymap.set("n", "<C-e>", function() toggle_telescope(harpoon:list()) end,
-            { desc = "Open harpoon window" })
+            { desc = "Open Harpoon window" })
 
         vim.keymap.set("n", "<leader>A", function() harpoon:list():prepend() end,
             { desc = "Prepend entry in Harpoon list" })
