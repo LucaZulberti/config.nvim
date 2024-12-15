@@ -43,6 +43,11 @@ return {
 
             -- Additional LSP behavior
             if client.server_capabilities.documentHighlightProvider then
+                -- Use underline for document highlights
+                vim.api.nvim_set_hl(0, "LspReferenceText", { underline = true })
+                vim.api.nvim_set_hl(0, "LspReferenceRead", { underline = true })
+                vim.api.nvim_set_hl(0, "LspReferenceWrite", { underline = true })
+
                 vim.api.nvim_create_autocmd("CursorHold", {
                     buffer = bufnr,
                     callback = vim.lsp.buf.document_highlight,
