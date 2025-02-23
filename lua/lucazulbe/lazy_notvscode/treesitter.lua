@@ -48,6 +48,10 @@ return {
                 -- Instead of true it can also be a list of languages
                 additional_vim_regex_highlighting = { "markdown" },
             },
+
+            fold = {
+                enable = true,
+            },
         })
 
         local treesitter_parser_config = require("nvim-treesitter.parsers").get_parser_configs()
@@ -60,5 +64,10 @@ return {
         }
 
         vim.treesitter.language.register("templ", "templ")
+
+        -- Use Treesitter for folding
+        vim.opt.foldmethod = "expr"
+        vim.opt.foldexpr   = "nvim_treesitter#foldexpr()"
+        vim.opt.foldlevel  = 99
     end
 }
