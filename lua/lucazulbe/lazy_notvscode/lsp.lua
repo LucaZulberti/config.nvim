@@ -20,45 +20,6 @@ return {
             }
         })
 
-        vim.keymap.set("n", "<leader>zig", "<cmd>LspRestart<cr>", { desc = "Restart LSP" })
-
-        local on_attach = function(client, bufnr)
-            -- Buffer-local keybindings for LSP
-            local opts = { noremap = true, silent = true, buffer = bufnr }
-            vim.keymap.set("n", "gd", vim.lsp.buf.definition,
-                vim.tbl_extend("force", opts, { desc = "Go to symbol definition" }))
-            vim.keymap.set("n", "gi", vim.lsp.buf.implementation,
-                vim.tbl_extend("force", opts, { desc = "Go to symbol implementation" }))
-            vim.keymap.set("n", "gr", vim.lsp.buf.references,
-                vim.tbl_extend("force", opts, { desc = "Show symbol references" }))
-            vim.keymap.set("n", "K", vim.lsp.buf.hover,
-                vim.tbl_extend("force", opts, { desc = "Show hover symbol information" }))
-            vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename,
-                vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
-            vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action,
-                vim.tbl_extend("force", opts, { desc = "Code actions..." }))
-            vim.keymap.set("n", "<leader>f", function()
-                vim.lsp.buf.format({ async = true })
-            end, vim.tbl_extend("force", opts, { desc = "Format current buffer" }))
-
-            -- Additional LSP behavior
-            if client.server_capabilities.documentHighlightProvider then
-                -- Use underline for document highlights
-                vim.api.nvim_set_hl(0, "LspReferenceText", { underline = true })
-                vim.api.nvim_set_hl(0, "LspReferenceRead", { underline = true })
-                vim.api.nvim_set_hl(0, "LspReferenceWrite", { underline = true })
-
-                vim.api.nvim_create_autocmd("CursorHold", {
-                    buffer = bufnr,
-                    callback = vim.lsp.buf.document_highlight,
-                })
-                vim.api.nvim_create_autocmd("CursorMoved", {
-                    buffer = bufnr,
-                    callback = vim.lsp.buf.clear_references,
-                })
-            end
-        end
-
         local cmp = require('cmp')
         local cmp_lsp = require("cmp_nvim_lsp")
         local capabilities = vim.tbl_deep_extend(
@@ -78,22 +39,12 @@ return {
                 function(server_name) -- default handler (optional)
                     require("lspconfig")[server_name].setup {
                         capabilities = capabilities,
-                        on_attach = on_attach, -- Attach the local on_attach function
                     }
                 end,
                 ["lua_ls"] = function()
                     local lspconfig = require("lspconfig")
                     lspconfig.lua_ls.setup {
                         capabilities = capabilities,
-                        on_attach = on_attach, -- Attach the local on_attach function
-                        settings = {
-                            Lua = {
-                                runtime = { version = "Lua 5.1" },
-                                diagnostics = {
-                                    globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
-                                }
-                            }
-                        }
                     }
                 end,
             }
@@ -114,6 +65,7 @@ return {
                 ["<C-Space>"] = cmp.mapping.complete(),
             }),
             sources = cmp.config.sources({
+                { name = "copilot", group_index = 2 },
                 { name = 'nvim_lsp' },
                 { name = 'luasnip' }, -- For luasnip users.
             }, {
