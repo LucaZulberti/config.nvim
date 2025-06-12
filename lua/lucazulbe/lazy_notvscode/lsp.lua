@@ -84,5 +84,9 @@ return {
                 prefix = "",
             },
         })
+
+        vim.keymap.set({ 'n', 'v' }, '<leader>f', function()
+            vim.lsp.buf.format { async = true }
+        end, { desc = "[lsp] Format current buffer or selection" })
     end
 }
