@@ -1,5 +1,8 @@
 return {
-  'mrcjkb/rustaceanvim',
+  "mrcjkb/rustaceanvim",
+  dependencies = {
+    "mfussenegger/nvim-dap",
+  },
   version = '^6', -- Recommended
   lazy = false, -- This plugin is already lazy
   init = function()
