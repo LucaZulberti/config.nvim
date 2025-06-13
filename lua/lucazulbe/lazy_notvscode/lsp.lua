@@ -47,6 +47,16 @@ return {
                         capabilities = capabilities,
                     }
                 end,
+                ["clangd"] = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.clangd.setup {
+                        capabilities = capabilities,
+                        cmd = { "clangd", "--background-index", "--compile-commands-dir=." },
+                        filetypes = { "c", "cpp", "objc", "objcpp" },
+                        -- root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git")
+                        root_markers = { '.clangd', 'compile_commands.json' },
+                    }
+                end,
             }
         })
 
@@ -87,6 +97,19 @@ return {
 
         vim.keymap.set({ 'n', 'v' }, '<leader>f', function()
             vim.lsp.buf.format { async = true }
-        end, { desc = "[lsp] Format current buffer or selection" })
+        end, { desc = "Format current buffer or selection" })
+
+        vim.keymap.set("n", "<leader>lr", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
+
+            for _, client in ipairs(clients) do
+                vim.lsp.stop_client(client.id)
+            end
+
+            vim.defer_fn(function()
+                vim.cmd("edit") -- re-edit buffer to retrigger LSP attachment
+            end, 100)
+        end, { desc = "Restart LSP for current buffer" })
     end
 }
