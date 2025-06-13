@@ -53,8 +53,7 @@ return {
                         capabilities = capabilities,
                         cmd = { "clangd", "--background-index", "--compile-commands-dir=." },
                         filetypes = { "c", "cpp", "objc", "objcpp" },
-                        -- root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git")
-                        root_markers = { '.clangd', 'compile_commands.json' },
+                        root_dir = lspconfig.util.root_pattern("compile_commands.json"),
                     }
                 end,
             }
@@ -101,7 +100,7 @@ return {
 
         vim.keymap.set("n", "<leader>lr", function()
             local bufnr = vim.api.nvim_get_current_buf()
-            local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
+            local clients = vim.lsp.get_clients({ bufnr = bufnr })
 
             for _, client in ipairs(clients) do
                 vim.lsp.stop_client(client.id)
