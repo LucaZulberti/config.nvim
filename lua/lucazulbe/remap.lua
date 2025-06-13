@@ -20,7 +20,30 @@ vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank to system clipboard" })
 vim.keymap.set("n", "Q", "<nop>", { desc = "Disable replay last recorded register" })
 
 -- Void register
-vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Replace into void register" })
+vim.keymap.set("x", "<leader>p", function()
+  -- Get the cursor position at the end of the visual selection.
+  -- Returns [bufnum, lnum (line), col (column), offset]
+  local end_pos = vim.fn.getpos(".")
+  local lnum = end_pos[2]         -- Line number of the cursor
+  local col = end_pos[3]          -- Column number (1-based)
+
+  -- Get the full line text at the current line
+  local line = vim.fn.getline(lnum)
+
+  -- Check if the cursor is at or beyond the end of the line
+  -- (i.e. selection ends at last character or further)
+  local is_eol = (col >= #line)
+
+  if is_eol then
+    -- Use 'p' to paste after the cursor when selection ends at line end.
+    -- Prevents pasting one char too far left.
+    vim.cmd('normal! "_dp')
+  else
+    -- Use 'P' to paste before the cursor when selection is in the middle of the line.
+    vim.cmd('normal! "_dP')
+  end
+end, { desc = "Smart replace without yanking" })
+
 vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete into void register" })
 vim.keymap.set({ "n", "v" }, "<leader>c", [["_c]], { desc = "Change into void register" })
 vim.keymap.set({ "n", "v" }, "<leader>di", [["_di]], { desc = "Delete into void register inside" })
