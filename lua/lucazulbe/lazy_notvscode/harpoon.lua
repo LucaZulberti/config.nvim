@@ -30,7 +30,7 @@ return {
             }):find()
         end
 
-        vim.keymap.set("n", "<C-e>", function() toggle_telescope(harpoon:list()) end,
+        vim.keymap.set("n", "<leader>h", function() toggle_telescope(harpoon:list()) end,
             { desc = "Open Harpoon window" })
 
         vim.keymap.set("n", "<leader>A", function() harpoon:list():prepend() end,
@@ -38,27 +38,27 @@ return {
         vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end,
             { desc = "Add entry in Harpoon list" })
 
-        vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end,
+        vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end,
             { desc = "Select 1st item in Harpoon list" })
-        vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end,
+        vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end,
             { desc = "Select 2nd item in Harpoon list" })
-        vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end,
+        vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end,
             { desc = "Select 3rd item in Harpoon list" })
-        vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end,
+        vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end,
             { desc = "Select 4th item in Harpoon list" })
 
-        vim.keymap.set("n", "<leader><C-h>", function() harpoon:list():replace_at(1) end,
+        vim.keymap.set("n", "<leader>w1", function() harpoon:list():replace_at(1) end,
             { desc = "Replace 1st item in Harpoon list" })
-        vim.keymap.set("n", "<leader><C-t>", function() harpoon:list():replace_at(2) end,
+        vim.keymap.set("n", "<leader>w2", function() harpoon:list():replace_at(2) end,
             { desc = "Replace 2nd item in Harpoon list" })
-        vim.keymap.set("n", "<leader><C-n>", function() harpoon:list():replace_at(3) end,
+        vim.keymap.set("n", "<leader>w3", function() harpoon:list():replace_at(3) end,
             { desc = "Replace 3rd item in Harpoon list" })
-        vim.keymap.set("n", "<leader><C-s>", function() harpoon:list():replace_at(4) end,
+        vim.keymap.set("n", "<leader>w4", function() harpoon:list():replace_at(4) end,
             { desc = "Replace 4th item in Harpoon list" })
 
-        vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end,
+        vim.keymap.set("n", "<leader>P", function() harpoon:list():prev() end,
             { desc = "Select previous item in Harpoon list" })
-        vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end,
+        vim.keymap.set("n", "<leader>N", function() harpoon:list():next() end,
             { desc = "Select next item in Harpoon list" })
     end
 }
