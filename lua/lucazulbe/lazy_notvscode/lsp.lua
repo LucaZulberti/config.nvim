@@ -17,7 +17,16 @@ return {
     config = function()
         require("conform").setup({
             formatters_by_ft = {
-            }
+                typescript = { "prettier" },
+                typescriptreact = { "prettier" },
+                javascript = { "prettier" },
+                html = { "prettier" },
+                css = { "prettier" },
+                json = { "prettier" },
+                yaml = { "prettier" },
+                markdown = { "prettier" },
+            },
+            format_on_save = false, -- optional
         })
 
         local cmp = require('cmp')
@@ -54,6 +63,24 @@ return {
                         cmd = { "clangd", "--background-index", "--compile-commands-dir=." },
                         filetypes = { "c", "cpp", "objc", "objcpp" },
                         root_dir = lspconfig.util.root_pattern("compile_commands.json"),
+                    }
+                end,
+                ["angularls"] = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.angularls.setup {
+                        cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
+                        capabilities = capabilities,
+                        filetypes = { "typescript", "html" },
+                        root_dir = lspconfig.util.root_pattern("angular.json", "package.json", "tsconfig.json", ".git"),
+                    }
+                end,
+                ["tsserver"] = function()
+                    require("lspconfig").tsserver.setup {
+                        capabilities = capabilities,
+                        on_attach = function(client)
+                            -- Disable tsserver formatting if you want angularls or another formatter to handle formatting
+                            client.server_capabilities.documentFormattingProvider = false
+                        end,
                     }
                 end,
             }
@@ -95,7 +122,10 @@ return {
         })
 
         vim.keymap.set({ 'n', 'v' }, '<leader>f', function()
-            vim.lsp.buf.format { async = true }
+            require("conform").format({
+                async = true,
+                lsp_fallback = true, -- fallback to LSP if no formatter is set
+            })
         end, { desc = "Format current buffer or selection" })
 
         vim.keymap.set("n", "<leader>lr", function()
