@@ -21,6 +21,7 @@ return {
                 typescriptreact = { "prettier" },
                 javascript = { "prettier" },
                 html = { "prettier" },
+                htmlangular = { "prettier" },
                 css = { "prettier" },
                 json = { "prettier" },
                 yaml = { "prettier" },
@@ -61,7 +62,6 @@ return {
                     lspconfig.clangd.setup {
                         capabilities = capabilities,
                         cmd = { "clangd", "--background-index", "--compile-commands-dir=." },
-                        filetypes = { "c", "cpp", "objc", "objcpp" },
                         root_dir = lspconfig.util.root_pattern("compile_commands.json"),
                     }
                 end,
@@ -70,7 +70,6 @@ return {
                     lspconfig.angularls.setup {
                         cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
                         capabilities = capabilities,
-                        filetypes = { "typescript", "html" },
                         root_dir = lspconfig.util.root_pattern("angular.json", "package.json", "tsconfig.json", ".git"),
                     }
                 end,
@@ -78,7 +77,18 @@ return {
                     require("lspconfig").tsserver.setup {
                         capabilities = capabilities,
                         on_attach = function(client)
-                            -- Disable tsserver formatting if you want angularls or another formatter to handle formatting
+                            -- Disable formatting, prettier is used
+                            client.server_capabilities.documentFormattingProvider = false
+                        end,
+                    }
+                end,
+                ["tailwindcss"] = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.tailwindcss.setup {
+                        cmd = { "tailwindcss-language-server", "--stdio" },
+                        capabilities = capabilities,
+                        on_attach = function(client)
+                            -- Disable formatting, prettier is used
                             client.server_capabilities.documentFormattingProvider = false
                         end,
                     }
