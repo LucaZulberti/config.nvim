@@ -27,7 +27,7 @@ return {
                 yaml = { "prettier" },
                 markdown = { "prettier" },
             },
-            format_on_save = false, -- optional
+            format_on_save = true, -- optional
         })
 
         local cmp = require('cmp')
@@ -134,7 +134,7 @@ return {
         vim.keymap.set({ 'n', 'v' }, '<leader>f', function()
             require("conform").format({
                 async = true,
-                lsp_fallback = true, -- fallback to LSP if no formatter is set
+                lsp_fallback = false, -- Do not fallback to LSP if no formatter is set
             })
         end, { desc = "Format current buffer or selection" })
 
