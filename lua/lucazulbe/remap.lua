@@ -67,6 +67,23 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc =
 vim.keymap.set("n", "<leader><leader>", "<cmd>so<CR>", { desc = "Source the current file" });
 vim.keymap.set("n", "<leader>r", "<cmd>e!<CR>", { desc = "Reload current file from disk" })
 
+vim.keymap.set('n', 'zr', function()
+  vim.fn.setreg('"', vim.fn.expand('%'))
+  print('Copied: ' .. vim.fn.expand('%'))
+end, { desc = 'Copy relative file path' })
+vim.keymap.set('n', 'zf', function()
+  vim.fn.setreg('"', vim.fn.expand('%:p'))
+  print('Copied: ' .. vim.fn.expand('%:p'))
+end, { desc = 'Copy full file path' })
+vim.keymap.set('n', 'Zr', function()
+  vim.fn.setreg('+', vim.fn.expand('%'))
+  print('Copied (clipboard): ' .. vim.fn.expand('%'))
+end, { desc = 'Copy relative file path to system clipboard' })
+vim.keymap.set('n', 'Zf', function()
+  vim.fn.setreg('+', vim.fn.expand('%:p'))
+  print('Copied (clipboard): ' .. vim.fn.expand('%:p'))
+end, { desc = 'Copy full file path to system clipboard' })
+
 -- Misc
 vim.keymap.set("n", "<leader>vvv", "<cmd>e ~/.config/nvim<CR>", { desc = "Edit Neovim config" });
 vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Escape in insert mode" })
