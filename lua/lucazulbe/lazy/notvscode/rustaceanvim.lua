@@ -6,8 +6,12 @@ return {
   version = '^6', -- Recommended
   lazy = false, -- This plugin is already lazy
   init = function()
+    local lz_lsp = require("lucazulbe.lsp")
+
     vim.g.rustaceanvim = {
       server = {
+        capabilities = lz_lsp.config.capabilities,
+        on_attach = lz_lsp.config.on_attach,
         settings = {
           ["rust-analyzer"] = {
             check = {
