@@ -18,23 +18,32 @@ M.on_attach = function(client, bufnr)
     -- See `:help vim.lsp.*` for documentation on any of the below functions
 
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, vim.tbl_extend('force', opts,
-        { desc = "Hover info" }))
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, vim.tbl_extend('force', opts,
-        { desc = "Signature info" }))
+        { desc = "Show hover info" }))
+    vim.keymap.set('n', '<space>lK', vim.lsp.buf.signature_help, vim.tbl_extend('force', opts,
+        { desc = "Show signature help" }))
 
-    vim.keymap.set('n', '<space>lD', vim.lsp.buf.declaration, vim.tbl_extend('force', opts,
-        { desc = "Jump to declaration" }))
     vim.keymap.set('n', '<space>ld', vim.lsp.buf.definition, vim.tbl_extend('force', opts,
         { desc = "Jump to definition" }))
+    vim.keymap.set('n', '<space>lD', vim.lsp.buf.declaration, vim.tbl_extend('force', opts,
+        { desc = "Jump to declaration" }))
     vim.keymap.set('n', '<space>lv', '<cmd>vsplit | lua vim.lsp.buf.definition()<CR>',
         vim.tbl_extend('force', opts,
             { desc = "Open definition in vertical split" }))
+    vim.keymap.set('n', '<space>lV', '<cmd>vsplit | lua vim.lsp.buf.declaration()<CR>',
+        vim.tbl_extend('force', opts,
+            { desc = "Open declaration in vertical split" }))
     vim.keymap.set('n', '<space>lh', '<cmd>split | lua vim.lsp.buf.definition()<CR>',
         vim.tbl_extend('force', opts,
             { desc = "Open definition in horizzontal split" }))
+    vim.keymap.set('n', '<space>lH', '<cmd>split | lua vim.lsp.buf.declaration()<CR>',
+        vim.tbl_extend('force', opts,
+            { desc = "Open declaration in horizzontal split" }))
     vim.keymap.set('n', '<space>lt', '<cmd>tab split | lua vim.lsp.buf.definition()<CR>',
         vim.tbl_extend('force', opts,
             { desc = "Open definition in a new tab" }))
+    vim.keymap.set('n', '<space>lT', '<cmd>tab split | lua vim.lsp.buf.declaration()<CR>',
+        vim.tbl_extend('force', opts,
+            { desc = "Open declaration in a new tab" }))
 
     vim.keymap.set('n', '<space>lrf', vim.lsp.buf.references, vim.tbl_extend('force', opts,
         { desc = "List references of current symbol" }))
