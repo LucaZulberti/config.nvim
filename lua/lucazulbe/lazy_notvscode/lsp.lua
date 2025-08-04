@@ -1,99 +1,151 @@
 return {
-    "neovim/nvim-lspconfig",
+    "mason-org/mason-lspconfig.nvim",
+    opts = {},
     dependencies = {
-        "stevearc/conform.nvim",
-        "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
+        { "mason-org/mason.nvim", opts = {} },
+        "neovim/nvim-lspconfig",
+
+        -- Snippet engine for Neovim
+        "L3MON4D3/LuaSnip",
+
+        -- Completions
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-path",
         "hrsh7th/cmp-cmdline",
         "hrsh7th/nvim-cmp",
-        "L3MON4D3/LuaSnip",
         "saadparwaiz1/cmp_luasnip",
+
+        -- Extensible UI for Neovim notifications and LSP progress messages
         "j-hui/fidget.nvim",
     },
 
     config = function()
-        require("conform").setup({
-            formatters_by_ft = {
-                typescript = { "prettier" },
-                typescriptreact = { "prettier" },
-                javascript = { "prettier" },
-                html = { "prettier" },
-                htmlangular = { "prettier" },
-                css = { "prettier" },
-                json = { "prettier" },
-                yaml = { "prettier" },
-                markdown = { "prettier" },
-            },
-            format_on_save = true, -- optional
-        })
-
         local cmp = require('cmp')
         local cmp_lsp = require("cmp_nvim_lsp")
+
+        require("fidget").setup({})
+        require("mason").setup({
+            ui = {
+                icons = {
+                    package_installed = "✓",
+                    package_pending = "➜",
+                    package_uninstalled = "✗"
+                }
+            }
+        })
+        require("mason-lspconfig").setup({
+            ensure_installed = {
+                "lua_ls",
+                "clangd",
+                "angularls",
+                "ts_ls",
+                "tailwindcss",
+                "vhdl_ls",
+            }
+        })
+
         local capabilities = vim.tbl_deep_extend(
             "force",
             {},
             vim.lsp.protocol.make_client_capabilities(),
             cmp_lsp.default_capabilities()
         )
+        local on_attach = function(client, bufnr)
+            -- Mappings
+            local opts = { noremap = true, silent = true, buffer = bufnr }
 
-        require("fidget").setup({})
-        require("mason").setup()
-        require("mason-lspconfig").setup({
-            ensure_installed = {
-                "lua_ls",
+            -- See `:help vim.lsp.*` for documentation on any of the below functions
+
+            vim.keymap.set('n', 'K', vim.lsp.buf.hover, vim.tbl_extend('force', opts,
+                { desc = "Hover info" }))
+            vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, vim.tbl_extend('force', opts,
+                { desc = "Signature info" }))
+
+            vim.keymap.set('n', '<space>lD', vim.lsp.buf.declaration, vim.tbl_extend('force', opts,
+                { desc = "Jump to declaration" }))
+            vim.keymap.set('n', '<space>ld', vim.lsp.buf.definition, vim.tbl_extend('force', opts,
+                { desc = "Jump to definition" }))
+            vim.keymap.set('n', '<space>lv', '<cmd>vsplit | lua vim.lsp.buf.definition()<CR>',
+                vim.tbl_extend('force', opts,
+                    { desc = "Open definition in vertical split" }))
+            vim.keymap.set('n', '<space>lh', '<cmd>split | lua vim.lsp.buf.definition()<CR>',
+                vim.tbl_extend('force', opts,
+                    { desc = "Open definition in horizzontal split" }))
+            vim.keymap.set('n', '<space>lt', '<cmd>tab split | lua vim.lsp.buf.definition()<CR>',
+                vim.tbl_extend('force', opts,
+                    { desc = "Open definition in a new tab" }))
+
+            vim.keymap.set('n', '<space>lrf', vim.lsp.buf.references, vim.tbl_extend('force', opts,
+                { desc = "List references of current symbol" }))
+            vim.keymap.set('n', '<space>lrn', vim.lsp.buf.rename, vim.tbl_extend('force', opts,
+                { desc = "Rename current symbol" }))
+            vim.keymap.set('n', '<space>lca', vim.lsp.buf.code_action, vim.tbl_extend('force', opts,
+                { desc = "List code actions" }))
+
+            vim.keymap.set('n', '<space>lwa', vim.lsp.buf.add_workspace_folder, vim.tbl_extend('force', opts,
+                { desc = "Add working directory or current folder to workspace list" }))
+            vim.keymap.set('n', '<space>lwr', vim.lsp.buf.remove_workspace_folder, vim.tbl_extend('force', opts,
+                { desc = "Remove working directory or current folder to workspace list" }))
+            vim.keymap.set('n', '<space>lwl', function()
+                print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+            end, vim.tbl_extend('force', opts,
+                { desc = "List workspace folders" }))
+        end
+
+        -- Configure language servers
+        vim.lsp.config('lua_ls', {
+            capabilities = capabilities,
+            on_attach = on_attach,
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = { "vim" }, -- Declare 'vim' as a global
+                    },
+                    workspace = {
+                        -- Make the server aware of Neovim runtime files
+                        library = vim.api.nvim_get_runtime_file("", true),
+                        checkThirdParty = false,
+                    },
+                },
             },
-            handlers = {
-                function(server_name) -- default handler (optional)
-                    require("lspconfig")[server_name].setup {
-                        capabilities = capabilities,
-                    }
-                end,
-                ["lua_ls"] = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.lua_ls.setup {
-                        capabilities = capabilities,
-                    }
-                end,
-                ["clangd"] = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.clangd.setup {
-                        capabilities = capabilities,
-                        cmd = { "clangd", "--background-index", "--compile-commands-dir=." },
-                        root_dir = lspconfig.util.root_pattern("compile_commands.json"),
-                    }
-                end,
-                ["angularls"] = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.angularls.setup {
-                        cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
-                        capabilities = capabilities,
-                        root_dir = lspconfig.util.root_pattern("angular.json", "package.json", "tsconfig.json", ".git"),
-                    }
-                end,
-                ["tsserver"] = function()
-                    require("lspconfig").tsserver.setup {
-                        capabilities = capabilities,
-                        on_attach = function(client)
-                            -- Disable formatting, prettier is used
-                            client.server_capabilities.documentFormattingProvider = false
-                        end,
-                    }
-                end,
-                ["tailwindcss"] = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.tailwindcss.setup {
-                        cmd = { "tailwindcss-language-server", "--stdio" },
-                        capabilities = capabilities,
-                        on_attach = function(client)
-                            -- Disable formatting, prettier is used
-                            client.server_capabilities.documentFormattingProvider = false
-                        end,
-                    }
-                end,
-            }
+        })
+        vim.lsp.config('clangd', {
+            capabilities = capabilities,
+            on_attach = on_attach,
+            cmd = { "clangd", "--background-index", "--compile-commands-dir=." },
+            root_markers = { 'compile_commands.json' },
+        })
+        vim.lsp.config('angularls', {
+            cmd = { "ngserver", "--stdio", "--tsProbeLocations", ".", "--ngProbeLocations", "." },
+            capabilities = capabilities,
+            on_attach = function(client, bufnr)
+                on_attach(client, bufnr)
+                -- Disable formatting, prettier is used
+                client.server_capabilities.documentFormattingProvider = false
+            end,
+            root_markers = { "angular.json", "package.json", "tsconfig.json", ".git" },
+        })
+        vim.lsp.config('ts_ls', {
+            capabilities = capabilities,
+            on_attach = function(client, bufnr)
+                on_attach(client, bufnr)
+                -- Disable formatting, prettier is used
+                client.server_capabilities.documentFormattingProvider = false
+            end,
+        })
+        vim.lsp.config('tailwindcss', {
+            cmd = { "tailwindcss-language-server", "--stdio" },
+            capabilities = capabilities,
+            on_attach = function(client, bufnr)
+                on_attach(client, bufnr)
+                -- Disable formatting, prettier is used
+                client.server_capabilities.documentFormattingProvider = false
+            end,
+        })
+        vim.lsp.config('vhdl_ls', {
+            capabilities = capabilities,
+            on_attach = on_attach
         })
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
@@ -120,25 +172,20 @@ return {
         })
 
         vim.diagnostic.config({
-            -- update_in_insert = true,
+            update_in_insert = true,
             float = {
                 focusable = false,
                 style = "minimal",
                 border = "rounded",
-                source = "always",
+                source = true,
                 header = "",
                 prefix = "",
             },
         })
 
-        vim.keymap.set({ 'n', 'v' }, '<leader>f', function()
-            require("conform").format({
-                async = true,
-                lsp_fallback = false, -- Do not fallback to LSP if no formatter is set
-            })
-        end, { desc = "Format current buffer or selection" })
+        vim.keymap.set('n', '<leader>le', vim.diagnostic.open_float, { desc = "Show diagnostics" })
 
-        vim.keymap.set("n", "<leader>lr", function()
+        vim.keymap.set("n", "<leader>lR", function()
             local bufnr = vim.api.nvim_get_current_buf()
             local clients = vim.lsp.get_clients({ bufnr = bufnr })
 
