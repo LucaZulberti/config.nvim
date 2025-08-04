@@ -100,6 +100,11 @@ return {
             end,
         })
         vim.lsp.config('vhdl_ls', {
+            on_attach = function(client, bufnr)
+                -- Search for .workspace-folders file into root dir to load multiple folders in LSP workspace
+                lz_lsp.workspaces.add_folders_from_file(client.config.root_dir)
+                lz_lsp.config.on_attach(client, bufnr)
+            end
         })
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
