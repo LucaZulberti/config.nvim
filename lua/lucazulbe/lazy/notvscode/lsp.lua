@@ -55,7 +55,8 @@ return {
         -- Configure language servers
         vim.lsp.config('*', {
             capabilities = vim.tbl_deep_extend("force", lz_lsp.config.capabilities, cmp_lsp.default_capabilities()),
-            on_attach = lz_lsp.on_attach,
+            on_attach = lz_lsp.config.on_attach,
+            root_markers = { '.git', '.hg', '.svn' },
         })
         vim.lsp.config('lua_ls', {
             settings = {
@@ -98,8 +99,6 @@ return {
                 -- Disable formatting, prettier is used
                 client.server_capabilities.documentFormattingProvider = false
             end,
-        })
-        vim.lsp.config('vhdl_ls', {
         })
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }

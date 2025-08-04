@@ -7,7 +7,6 @@ M.get_folders_from_file = function(root_dir, filename)
 
     local fd = uv.fs_open(path, "r", tonumber("066", 8))
     if not fd then
-        vim.notify("Workspace file not found: " .. path, vim.log.levels.WARN)
         return
     end
 
@@ -27,10 +26,15 @@ end
 
 M.add_folders_from_file = function(root_dir, filename)
     local folders = M.get_folders_from_file(root_dir, filename)
+
+    if not folders or vim.tbl_isempty(folders) then
+        return
+    end
+
     for _, folder in ipairs(folders) do
         vim.lsp.buf.add_workspace_folder(folder)
-        vim.notify("Added workspace folder: " .. folder, vim.log.levels.INFO)
     end
+    vim.notify("Loaded workspace folders from " .. root_dir .. "/" .. filename, vim.log.levels.INFO)
 end
 
 return M

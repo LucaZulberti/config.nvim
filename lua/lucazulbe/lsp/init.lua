@@ -1,6 +1,6 @@
 local M = {}
 
 M.config = require("lucazulbe.lsp.config")
-M.workspaces = require("lucazulbe.lsp.workspaces")
+M.workspace = require("lucazulbe.lsp.workspace")
 
 return M

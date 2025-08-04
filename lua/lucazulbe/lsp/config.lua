@@ -7,6 +7,11 @@ M.capabilities = vim.tbl_deep_extend(
 )
 
 M.on_attach = function(client, bufnr)
+    local lz_lsp = require("lucazulbe.lsp")
+
+    -- Search for .workspace-folders file into root dir to load multiple folders in LSP workspace
+    lz_lsp.workspace.add_folders_from_file(client.config.root_dir, ".workspace-folders")
+
     -- Mappings
     local opts = { noremap = true, silent = true, buffer = bufnr }
 
