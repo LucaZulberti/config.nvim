@@ -38,23 +38,26 @@ return {
         vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end,
             { desc = "Add entry in Harpoon list" })
 
-        vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end,
-            { desc = "Select 1st item in Harpoon list" })
-        vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end,
-            { desc = "Select 2nd item in Harpoon list" })
-        vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end,
-            { desc = "Select 3rd item in Harpoon list" })
-        vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end,
-            { desc = "Select 4th item in Harpoon list" })
+        -- Create select and replace keymaps (1-9)
+        for i = 1, 9 do
+            local desc = "" .. i
+            -- Add the proper ordinal suffix
+            if i == 1 then
+                desc = desc .. "st"
+            elseif i == 2 then
+                desc = desc .. "nd"
+            elseif i == 3 then
+                desc = desc .. "rd"
+            else
+                desc = desc .. "th"
+            end
+            desc = desc .. " item in Harpoon list"
 
-        vim.keymap.set("n", "<leader>w1", function() harpoon:list():replace_at(1) end,
-            { desc = "Replace 1st item in Harpoon list" })
-        vim.keymap.set("n", "<leader>w2", function() harpoon:list():replace_at(2) end,
-            { desc = "Replace 2nd item in Harpoon list" })
-        vim.keymap.set("n", "<leader>w3", function() harpoon:list():replace_at(3) end,
-            { desc = "Replace 3rd item in Harpoon list" })
-        vim.keymap.set("n", "<leader>w4", function() harpoon:list():replace_at(4) end,
-            { desc = "Replace 4th item in Harpoon list" })
+            vim.keymap.set("n", "<leader>" .. i, function() harpoon:list():select(i) end,
+                { desc = "Select " .. desc })
+            vim.keymap.set("n", "<leader>H" .. i, function() harpoon:list():replace_at(i) end,
+                { desc = "Replace " .. desc })
+        end
 
         vim.keymap.set("n", "<leader>P", function() harpoon:list():prev() end,
             { desc = "Select previous item in Harpoon list" })
