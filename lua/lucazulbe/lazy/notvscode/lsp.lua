@@ -68,7 +68,9 @@ return {
             },
         })
         vim.lsp.config('clangd', {
-            cmd = { "clangd", "--background-index", "--compile-commands-dir=." },
+            capabilities = vim.tbl_deep_extend("force", lz_lsp.config.capabilities, cmp_lsp.default_capabilities()),
+            on_attach = lz_lsp.config.on_attach,
+            cmd = { "clangd", "--background-index" },
             root_markers = { 'compile_commands.json' },
         })
         vim.lsp.config('angularls', {
