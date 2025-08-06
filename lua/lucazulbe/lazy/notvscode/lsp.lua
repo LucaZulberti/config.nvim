@@ -44,11 +44,6 @@ return {
         require("mason-lspconfig").setup({
             ensure_installed = {
                 "lua_ls",
-                "clangd",
-                "angularls",
-                "ts_ls",
-                "tailwindcss",
-                "vhdl_ls",
             }
         })
 
