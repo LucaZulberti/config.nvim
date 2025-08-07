@@ -65,7 +65,7 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Go to previous lo
 -- Work on current file
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make the current file executable" })
 vim.keymap.set("n", "<leader><leader>", "<cmd>so<CR>", { desc = "Source the current file" });
-vim.keymap.set("n", "<leader>r", "<cmd>e!<CR>", { desc = "Reload current file from disk" })
+vim.keymap.set("n", "<leader>R", "<cmd>e!<CR>", { desc = "Reload current file from disk" })
 
 vim.keymap.set('n', 'zr', function()
   vim.fn.setreg('"', vim.fn.expand('%'))
