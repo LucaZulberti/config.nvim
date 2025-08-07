@@ -2,19 +2,22 @@ local M = {}
 
 M.get_folders_from_file = function(root_dir, filename)
     local uv = vim.uv
+    local folders = {}
+
     filename = filename or ".workspace-folders"
+
+    if not root_dir then return folders end
+
     local path = root_dir .. "/" .. filename
 
     local fd = uv.fs_open(path, "r", tonumber("066", 8))
     if not fd then
-        return
+        return folders
     end
 
     local stat = uv.fs_fstat(fd)
     local content = uv.fs_read(fd, stat.size, 0)
     uv.fs_close(fd)
-
-    local folders = {}
 
     for line in content:gmatch("[^\r\n]+") do
         local folder = vim.fn.fnamemodify(root_dir .. "/" .. line, ":p")
