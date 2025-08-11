@@ -42,6 +42,9 @@ vim.pack.add({
     -- Highlight patterns in text
     { src = "https://github.com/echasnovski/mini.hipatterns" },
 
+    -- Autopairs
+    { src = "https://github.com/echasnovski/mini.pairs" },
+
     -- Pick anything
     { src = "https://github.com/echasnovski/mini.pick" },
 
@@ -88,6 +91,7 @@ require("mini.operators").setup()
 require("mini.surround").setup()
 require("mini.snippets").setup()
 require("mini.completion").setup()
+require("mini.pairs").setup()
 require("mini.hipatterns").setup({
     highlighters = {
         -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
