@@ -51,8 +51,14 @@ vim.pack.add({
     -- Pick anything
     { src = "https://github.com/echasnovski/mini.pick" },
 
+    -- Navigate and manipulate file system
+    { src = "https://github.com/echasnovski/mini.files" },
+
     -- Extra 'mini.nvim' functionality
     { src = "https://github.com/echasnovski/mini.extra" },
+
+    -- Icon provider
+    { src = "https://github.com/echasnovski/mini.icons" },
 
     -- Work with trailing whitespace
     { src = "https://github.com/echasnovski/mini.trailspace" },
@@ -109,7 +115,9 @@ require("mini.hipatterns").setup({
     },
 })
 require("mini.pick").setup()
+require("mini.files").setup()
 require("mini.extra").setup()
+require("mini.icons").setup()
 require("mini.trailspace").setup()
 
 require("fidget").setup()
@@ -158,6 +166,10 @@ map('n', '<leader>plc', ":Pick list scope='change'<CR>", { desc = "[Mini.Pick] C
 map('n', '<leader>pm', ":Pick marks<CR>", { desc = "[Mini.Pick] Marks" })
 map('n', '<leader>pr', ":Pick registers<CR>", { desc = "[Mini.Pick] Registers" })
 map('n', '<leader>pk', ":Pick keymaps<CR>", { desc = "[Mini.Pick] Keymaps" })
+
+map('n', '<leader>f', function()
+    require("mini.files").open()
+end, { desc = "[Mini.Files] Open" })
 
 map({ 'n', 'v' }, '<leader>lf', function()
     require("conform").format({
