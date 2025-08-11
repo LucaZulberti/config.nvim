@@ -47,6 +47,19 @@ vim.pack.add({
 
     -- Tree-Sitter
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+
+    -- Extensible UI for Neovim notifications
+    { src = "https://github.com/j-hui/fidget.nvim" },
+
+    -- LSP Configururations
+    -- { src = "https://github.com/neovim/nvim-lspconfig" },
+    -- Checkout local lua/nvim-lspconfig
+
+    -- Package manager for LSP, DAP, linters, formatters
+    { src = "https://github.com/mason-org/mason.nvim" },
+
+    -- Lightweight yet powerful formatter
+    { src = "https://github.com/stevearc/conform.nvim" },
 })
 
 -- Configure plugins
@@ -77,6 +90,29 @@ require("mini.pick").setup()
 require("mini.extra").setup()
 require("mini.trailspace").setup()
 
+require("fidget").setup()
+
+require("mason").setup()
+
+require("conform").setup({
+    formatters_by_ft = {
+        typescript = { "prettier" },
+        typescriptreact = { "prettier" },
+        javascript = { "prettier" },
+        html = { "prettier" },
+        htmlangular = { "prettier" },
+        css = { "prettier" },
+        json = { "prettier" },
+        yaml = { "prettier" },
+        markdown = { "prettier" },
+    },
+    format_on_save = {
+        -- These options will be passed to conform.format()
+        timeout_ms = 500,
+        lsp_format = "fallback",
+    },
+})
+
 
 -- Remap plugin commands
 ---
@@ -98,3 +134,10 @@ map('n', '<leader>plj', ":Pick list scope='jump'<CR>", { desc = "[Mini.Pick] Jum
 map('n', '<leader>plc', ":Pick list scope='change'<CR>", { desc = "[Mini.Pick] Change List" })
 map('n', '<leader>pm', ":Pick marks<CR>", { desc = "[Mini.Pick] Marks" })
 map('n', '<leader>pr', ":Pick registers<CR>", { desc = "[Mini.Pick] Registers" })
+
+map({ 'n', 'v' }, '<leader>lf', function()
+    require("conform").format({
+        async = true,
+        lsp_format = "fallback",
+    })
+end, { desc = "[Conform] Format current buffer or selection" })
