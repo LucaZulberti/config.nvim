@@ -141,6 +141,7 @@ map('n', '<leader>plj', ":Pick list scope='jump'<CR>", { desc = "[Mini.Pick] Jum
 map('n', '<leader>plc', ":Pick list scope='change'<CR>", { desc = "[Mini.Pick] Change List" })
 map('n', '<leader>pm', ":Pick marks<CR>", { desc = "[Mini.Pick] Marks" })
 map('n', '<leader>pr', ":Pick registers<CR>", { desc = "[Mini.Pick] Registers" })
+map('n', '<leader>pk', ":Pick keymaps<CR>", { desc = "[Mini.Pick] Keymaps" })
 
 map({ 'n', 'v' }, '<leader>lf', function()
     require("conform").format({
