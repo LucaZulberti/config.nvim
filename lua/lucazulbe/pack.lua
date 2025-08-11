@@ -33,6 +33,12 @@ vim.pack.add({
     -- TODO: study
     { src = "https://github.com/echasnovski/mini.surround" },
 
+    -- Autocompletion and signature help plugin
+    { src = "https://github.com/echasnovski/mini.snippets" },
+
+    -- Autocompletion and signature help plugin
+    { src = "https://github.com/echasnovski/mini.completion" },
+
     -- Highlight patterns in text
     { src = "https://github.com/echasnovski/mini.hipatterns" },
 
@@ -80,6 +86,8 @@ require("oil").setup()
 require("mini.ai").setup()
 require("mini.operators").setup()
 require("mini.surround").setup()
+require("mini.snippets").setup()
+require("mini.completion").setup()
 require("mini.hipatterns").setup({
     highlighters = {
         -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
