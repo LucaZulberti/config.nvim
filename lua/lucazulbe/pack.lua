@@ -63,6 +63,9 @@ vim.pack.add({
 
     -- A hackable markdown, Typst, latex, html(inline) & YAML previewer
     { src = "https://github.com/OXY2DEV/markview.nvim" },
+
+    -- Low latency typst preview
+    { src = "https://github.com/chomosuke/typst-preview.nvim" },
 })
 
 -- Configure plugins
@@ -116,6 +119,7 @@ require("conform").setup({
     },
 })
 
+require("typst-preview").setup()
 
 -- Remap plugin commands
 ---

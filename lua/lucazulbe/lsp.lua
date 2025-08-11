@@ -2,7 +2,7 @@
 local map = vim.keymap.set
 
 -- Enable LSPs
-vim.lsp.enable({ "lua_ls", "fish" })
+vim.lsp.enable({ "lua_ls", "fish", "tinymist" })
 
 -- Add LSP commands
 ---
@@ -25,3 +25,10 @@ end, { desc = "[LSP] Restart for current buffer" })
 
 -- Configure each LSP
 ---
+
+vim.lsp.config("tinymist", {
+    settings = {
+        formatterMode = "typstyle",
+        exportPdf = "never"
+    }
+})
