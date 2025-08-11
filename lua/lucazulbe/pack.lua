@@ -60,6 +60,9 @@ vim.pack.add({
 
     -- Lightweight yet powerful formatter
     { src = "https://github.com/stevearc/conform.nvim" },
+
+    -- A hackable markdown, Typst, latex, html(inline) & YAML previewer
+    { src = "https://github.com/OXY2DEV/markview.nvim" },
 })
 
 -- Configure plugins
