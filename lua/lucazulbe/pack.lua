@@ -1,0 +1,100 @@
+-- Shortcut
+local map = vim.keymap.set
+
+-- Install plugins
+vim.pack.add({
+    -- Theme
+    { src = "https://github.com/rose-pine/neovim" },
+
+    -- Useless automation for sad mood
+    { src = "https://github.com/Eandrju/cellular-automaton.nvim" },
+
+    -- Heuristically set buffer options
+    { src = "https://github.com/tpope/vim-sleuth" },
+
+    -- A Git wrapper so awesome, it should be illegal
+    { src = "https://github.com/tpope/vim-fugitive" },
+
+    -- Add Git to signs column
+    { src = "https://github.com/lewis6991/gitsigns.nvim" },
+
+    -- File explore and filesystem editor
+    { src = "https://github.com/stevearc/oil.nvim" },
+
+    -- Extend and create a/i textobjects
+    -- TODO: study
+    { src = "https://github.com/echasnovski/mini.ai" },
+
+    -- Text edit operators
+    -- TODO: study
+    { src = "https://github.com/echasnovski/mini.operators" },
+
+    -- Fast and feature-rich surround actions
+    -- TODO: study
+    { src = "https://github.com/echasnovski/mini.surround" },
+
+    -- Highlight patterns in text
+    { src = "https://github.com/echasnovski/mini.hipatterns" },
+
+    -- Pick anything
+    { src = "https://github.com/echasnovski/mini.pick" },
+
+    -- Extra 'mini.nvim' functionality
+    { src = "https://github.com/echasnovski/mini.extra" },
+
+    -- Work with trailing whitespace
+    { src = "https://github.com/echasnovski/mini.trailspace" },
+
+    -- Tree-Sitter
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+})
+
+-- Configure plugins
+---
+
+require("rose-pine").setup({
+    variant = "moon"
+})
+
+require("oil").setup()
+
+require("mini.ai").setup()
+require("mini.operators").setup()
+require("mini.surround").setup()
+require("mini.hipatterns").setup({
+    highlighters = {
+        -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+        fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+        hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+        todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+        note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
+
+        -- Highlight hex color strings (`#rrggbb`) using that color
+        hex_color = require("mini.hipatterns").gen_highlighter.hex_color(),
+    },
+})
+require("mini.pick").setup()
+require("mini.extra").setup()
+require("mini.trailspace").setup()
+
+
+-- Remap plugin commands
+---
+
+map("n", "<leader>rain", "<cmd>CellularAutomaton make_it_rain<CR>", { desc = "[Meme] Make it rain" })
+
+map('n', '<leader>e', ":Oil<CR>", { desc = "[Oil] Explore filesystem" })
+
+map('n', '<leader>pf', ":Pick files<CR>", { desc = "[Mini.Pick] Files" })
+map('n', '<leader>ph', ":Pick help<CR>", { desc = "[Mini.Pick] Help" })
+map('n', '<leader>pd', ":Pick diagnostic<CR>", { desc = "[Mini.Pick] Diagnostic" })
+map('n', '<leader>pe', ":Pick explorer<CR>", { desc = "[Mini.Pick] Explorer" })
+map('n', '<leader>pgf', ":Pick git_files<CR>", { desc = "[Mini.Pick] Git Files" })
+map('n', '<leader>pgl', ":Pick git_commits<CR>", { desc = "[Mini.Pick] Git Log" })
+map('n', '<leader>pgh', ":Pick git_hunks<CR>", { desc = "[Mini.Pick] Git Hunks" })
+map('n', '<leader>plq', ":Pick list scope='quickfix'<CR>", { desc = "[Mini.Pick] Quickfix List" })
+map('n', '<leader>pll', ":Pick list scope='location'<CR>", { desc = "[Mini.Pick] Location List" })
+map('n', '<leader>plj', ":Pick list scope='jump'<CR>", { desc = "[Mini.Pick] Jump List" })
+map('n', '<leader>plc', ":Pick list scope='change'<CR>", { desc = "[Mini.Pick] Change List" })
+map('n', '<leader>pm', ":Pick marks<CR>", { desc = "[Mini.Pick] Marks" })
+map('n', '<leader>pr', ":Pick registers<CR>", { desc = "[Mini.Pick] Registers" })
