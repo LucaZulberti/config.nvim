@@ -5,25 +5,46 @@ function M.t(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
--- Notify Vim-Motion practice
-function M.notify_practice()
-    vim.cmd('echohl WarningMsg')
-    vim.cmd([[echom "You need to practice Vim-Motions!!!"]])
-    vim.cmd('echohl None')
+function M.notify_hover(line)
+    local width = vim.fn.strdisplaywidth(line)
+
+    -- Create scratch buffer (no file, listed)
+    local buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { line })
+
+    local opts = {
+        relative = 'cursor',
+        width = width,
+        height = 1,
+        col = 1,
+        row = 1,
+        style = 'minimal',
+        border = 'rounded',
+    }
+
+    local win = vim.api.nvim_open_win(buf, false, opts)
+
+    -- Define handler ID variable here so we can unregister it inside callback
+    local handler_id
+    local handler = function()
+        -- Close hover window on keypress
+        if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_close(win, true)
+        end
+
+        -- Unregister the handler after first keypress
+        vim.on_key(nil, handler_id)
+    end
+
+    -- Actually register the handler and save the namespace ID for later unregistration
+    handler_id = vim.on_key(handler)
 end
 
 -- Disable a give keymap
-function M.disable_keymap(key)
-    -- For insert mode, show message and stay in insert mode
-    vim.keymap.set('i', key, function()
-        -- Exit insert, show message, re-enter insert
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'n', false)
-        M.notify_practice()
-        vim.api.nvim_feedkeys('i', 'n', false)
-    end, opts)
-
-    -- For normal and visual modes just show message
-    vim.keymap.set({ 'n', 'v' }, key, M.notify_practice, opts)
+function M.disable_keymap_and_notify(key)
+    vim.keymap.set({ 'n', 'v', 'i' }, key, function()
+        M.notify_hover("Key " .. key .. " is disabled, use Vim motions!")
+    end, { desc = "[General] " .. key .. " is disabled, show reminder", noremap = true, silent = true })
 end
 
 -- Use vimgrep or lvimgrep depending on quick boolean parameter

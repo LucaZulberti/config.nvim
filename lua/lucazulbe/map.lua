@@ -4,8 +4,8 @@ local funcs = require("lucazulbe.functions")
 local map = vim.keymap.set
 
 -- Force to learn Vim-Motions
-for _, key in ipairs { '<Up>', '<Down>', '<Left>', '<Right>', '<PageUp>', '<PageDown>' } do
-    funcs.disable_keymap(key)
+for _, key in ipairs { '<Up>', '<Down>', '<Left>', '<Right>', '<PageUp>', '<PageDown>', '<Home>', '<End>' } do
+    funcs.disable_keymap_and_notify(key)
 end
 
 -- General

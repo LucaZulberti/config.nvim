@@ -1,5 +1,5 @@
 -- Force to practice Vim-Motions disabling mouse
-vim.cmd([[set mouse=]])
+vim.o.mouse = ""
 
 -- Global variables
 vim.g.mapleader = " "
