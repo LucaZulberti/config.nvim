@@ -21,6 +21,9 @@ vim.pack.add({
     -- File explore and filesystem editor
     { src = "https://github.com/stevearc/oil.nvim" },
 
+    -- Vim-Tmux Navogator
+    { src = "https://github.com/christoomey/vim-tmux-navigator" },
+
     -- Extend and create a/i textobjects
     -- TODO: study
     { src = "https://github.com/echasnovski/mini.ai" },
