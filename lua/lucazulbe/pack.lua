@@ -70,11 +70,13 @@ vim.pack.add({
     { src = "https://github.com/j-hui/fidget.nvim" },
 
     -- LSP Configururations
-    -- { src = "https://github.com/neovim/nvim-lspconfig" },
-    -- Checkout local lua/nvim-lspconfig
+    { src = "https://github.com/neovim/nvim-lspconfig" },
 
     -- Package manager for LSP, DAP, linters, formatters
     { src = "https://github.com/mason-org/mason.nvim" },
+
+    -- Makes it easier to use lspconfig with mason.nvim
+    { src = "https://github.com/mason-org/mason-lspconfig.nvim" },
 
     -- Lightweight yet powerful formatter
     { src = "https://github.com/stevearc/conform.nvim" },
@@ -123,6 +125,7 @@ require("mini.trailspace").setup()
 require("fidget").setup()
 
 require("mason").setup()
+require("mason-lspconfig").setup()
 
 require("conform").setup({
     formatters_by_ft = {

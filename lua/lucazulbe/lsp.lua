@@ -1,8 +1,6 @@
 -- Shortcut
 local map = vim.keymap.set
 
--- Enable LSPs
-vim.lsp.enable({ "lua_ls", "fish", "tinymist" })
 
 -- Add LSP commands
 ---
