@@ -36,3 +36,12 @@ vim.lsp.config("tinymist", {
         exportPdf = "never"
     }
 })
+
+vim.lsp.config("remark_ls", {
+    settings = {
+        remark = {
+            requireConfig = true,
+        }
+
+    }
+})
