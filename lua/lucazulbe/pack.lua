@@ -172,7 +172,7 @@ require("typst-preview").setup()
 -- Remap plugin commands
 ---
 
-map("n", "<leader>rain", "<cmd>CellularAutomaton make_it_rain<CR>", { desc = "[Meme] Make it rain" })
+map("n", "<leader>R", "<cmd>CellularAutomaton make_it_rain<CR>", { desc = "[Meme] Make it rain" })
 
 map('n', '<leader>e', ":Oil<CR>", { desc = "[Oil] Explore filesystem" })
 
