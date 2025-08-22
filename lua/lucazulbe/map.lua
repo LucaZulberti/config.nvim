@@ -16,6 +16,7 @@ map("n", "<leader>vvv", "<cmd>e ~/.config/nvim<CR>", { desc = "[Neovim] Edit con
 map("n", "<leader>o", ":update<CR> :source<CR>", { desc = "[File] Source" })
 map("n", "<leader>w", ":write<CR>", { desc = "[File] Write" })
 map("n", "<leader>q", ":quit<CR>", { desc = "[File] Quit" })
+map("n", "<leader>r", "<cmd>edit!<CR>", { desc = "[File] Reload" })
 map("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "[File] Make executable" })
 map("n", "<leader>zr", function()
     vim.fn.setreg([["]], vim.fn.expand("%"))
