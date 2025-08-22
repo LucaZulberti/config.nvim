@@ -107,18 +107,30 @@ require("mini.snippets").setup()
 require("mini.completion").setup()
 require("mini.pairs").setup()
 require("mini.move").setup()
+
+-- New highlight groups
+vim.api.nvim_set_hl(0, "MiniHipatternsAlert", { fg = "#232136", bg = "#ff5555", bold = true })
+vim.api.nvim_set_hl(0, "MiniHipatternsInfo", { fg = "#232136", bg = "#5fd7ff", bold = true })
+vim.api.nvim_set_hl(0, "MiniHipatternsDebug", { fg = "#232136", bg = "#afff87", bold = true })
+vim.api.nvim_set_hl(0, "MiniHipatternsPerf", { fg = "#232136", bg = "#ff9e64", bold = true })
+
 require("mini.hipatterns").setup({
     highlighters = {
-        -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
-        fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
-        hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
-        todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
-        note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
+        fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+        hack  = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+        todo  = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+        note  = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
+        alert = { pattern = '%f[%w]()ALERT()%f[%W]', group = 'MiniHipatternsAlert' },
+        info  = { pattern = '%f[%w]()INFO()%f[%W]', group = 'MiniHipatternsInfo' },
+        debug = { pattern = '%f[%w]()DEBUG()%f[%W]', group = 'MiniHipatternsDebug' },
+        perf  = { pattern = '%f[%w]()PERF()%f[%W]', group = 'MiniHipatternsPerf' },
+
 
         -- Highlight hex color strings (`#rrggbb`) using that color
         hex_color = require("mini.hipatterns").gen_highlighter.hex_color(),
     },
 })
+
 require("mini.pick").setup()
 require("mini.files").setup()
 require("mini.extra").setup()
