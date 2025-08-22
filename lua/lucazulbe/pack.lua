@@ -137,6 +137,12 @@ require("mini.extra").setup()
 require("mini.icons").setup()
 require("mini.trailspace").setup()
 
+require("nvim-treesitter.configs").setup {
+    ensure_installed = { "lua", "vim", "bash", "fish", "c", "cpp" },
+    auto_install = true,
+    highlight = { enable = true },
+}
+
 require("fidget").setup()
 
 require("mason").setup()
