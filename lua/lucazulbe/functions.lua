@@ -55,12 +55,38 @@ function M.replace_word_under_cursor(quick)
         return
     end
 
-    local grep_cmd = quick and "vimgrep" or "lvimgrep"
-    local target = quick and "**/*" or "%"
+    -- If rg is available, use it; otherwise fallback
+    if vim.fn.executable("rg") then
+        -- Run rg and capture results
+        local rg_cmd = {
+            "rg",
+            "--vimgrep",
+            "--word-regexp",
+            word,
+        }
 
-    -- Run grep command
-    local cmd = string.format('%s /\\<%s\\>/j %s', grep_cmd, word, target)
-    vim.cmd(cmd)
+        -- If not quick (location list mode), restrict to current file
+        if not quick then
+            table.insert(rg_cmd, vim.fn.expand("%:p"))
+        end
+
+        -- Get results from rg invocation
+        local results = vim.fn.systemlist(rg_cmd)
+
+        -- Set quickfix list or location list accordingly
+        if quick then
+            vim.fn.setqflist({}, " ", { title = "Ripgrep", lines = results })
+        else
+            vim.fn.setloclist(0, {}, " ", { title = "Ripgrep", lines = results })
+        end
+    else
+        -- fallback to vim's builtin vimgrep/lvimgrep
+        local grep_cmd = quick and "vimgrep" or "lvimgrep"
+        local target = quick and "**/*" or "%"
+
+        local vimgrep_cmd = string.format("%svimgrep /\\<%s\\>/j %s", grep_cmd, word, target)
+        vim.cmd(vimgrep_cmd)
+    end
 
     -- Open appropriate list window
     if quick then
@@ -70,21 +96,15 @@ function M.replace_word_under_cursor(quick)
     end
 
     -- Prepare substitute command
-    if quick then
-        vim.api.nvim_feedkeys(":cfdo ", "n", false)
-    else
-        vim.api.nvim_feedkeys(":lfdo ", "n", false)
-    end
+    local prefix = quick and ":cfdo " or ":lfdo "
+    vim.api.nvim_feedkeys(prefix, "n", false)
 
     -- Add substitution string
     vim.api.nvim_feedkeys(string.format("%%s/\\<%s\\>/%s/gI | update", word, word), "n", false)
 
     -- Close opened window
-    if quick then
-        vim.api.nvim_feedkeys(" | cclose ", "n", false)
-    else
-        vim.api.nvim_feedkeys(" | lclose", "n", false)
-    end
+    local close_cmd = quick and " | cclose" or " | lclose"
+    vim.api.nvim_feedkeys(close_cmd, "n", false)
 
     -- Move cursor back to substitution text
     vim.api.nvim_feedkeys(string.rep(M.t("<Left>"), 21), "n", false)
