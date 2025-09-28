@@ -27,3 +27,6 @@ vim.o.swapfile = false
 vim.o.backup = false
 vim.o.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.o.undofile = true
+
+-- Speed up responsiveness of neovim
+vim.o.updatetime = 250 -- 250 ms
