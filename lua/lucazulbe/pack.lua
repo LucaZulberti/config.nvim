@@ -18,6 +18,9 @@ vim.pack.add({
     -- Add signs column
     { src = "https://github.com/mhinz/vim-signify" },
 
+    -- Documentation generation
+    { src = "https://github.com/danymat/neogen" },
+
     -- File explore and filesystem editor
     { src = "https://github.com/stevearc/oil.nvim" },
 
@@ -99,6 +102,8 @@ require("rose-pine").setup({
 })
 
 require("oil").setup()
+
+require("neogen").setup()
 
 require("mini.ai").setup()
 require("mini.operators").setup()
