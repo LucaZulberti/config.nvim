@@ -15,8 +15,8 @@ vim.pack.add({
     -- A Git wrapper so awesome, it should be illegal
     { src = "https://github.com/tpope/vim-fugitive" },
 
-    -- Add Git to signs column
-    { src = "https://github.com/lewis6991/gitsigns.nvim" },
+    -- Add signs column
+    { src = "https://github.com/mhinz/vim-signify" },
 
     -- File explore and filesystem editor
     { src = "https://github.com/stevearc/oil.nvim" },
