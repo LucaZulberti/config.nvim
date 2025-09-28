@@ -2,6 +2,7 @@ require("lucazulbe.set")
 require("lucazulbe.map")
 require("lucazulbe.pack")
 require("lucazulbe.lsp")
+require("lucazulbe.theme")
 
 -- Appearance
 vim.cmd("colorscheme rose-pine")
