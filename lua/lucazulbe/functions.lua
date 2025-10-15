@@ -48,21 +48,48 @@ function M.disable_keymap_and_notify(key)
 end
 
 -- Use vimgrep or lvimgrep depending on quick boolean parameter
-function M.replace_word_under_cursor(quick)
-    local word = vim.fn.expand("<cword>")
+function M.replace_word_under_cursor_or_selection(quick, use_selection)
+    local word = ""
+
+    if use_selection then
+        -- Save current visual selection
+        local old_reg = vim.fn.getreg('"')
+        local old_regtype = vim.fn.getregtype('"')
+
+        vim.cmd('normal! "vy') -- yank visual selection into " register
+        word = vim.fn.getreg('"')
+
+        -- restore unnamed register
+        vim.fn.setreg('"', old_reg, old_regtype)
+    else
+        word = vim.fn.expand("<cword>")
+    end
+
+    if word == "" then
+        print("No word or selection found")
+        return
+    end
+
     if word == "" then
         print("No word under cursor")
         return
     end
 
+    -- Escape special regex characters in word for literal search
+    local word_escaped = vim.fn.escape(word, "\\/.*$^~()[]")
+
     -- If rg is available, use it; otherwise fallback
     if vim.fn.executable("rg") then
-        -- Run rg and capture results
+        -- Rg mode depending on selection flag
+        local rg_mode = use_selection and "--fixed-strings" or "--word-regexp"
+        local rg_word = use_selection and word or word_escaped
+
+        -- Prepare rg command
         local rg_cmd = {
             "rg",
             "--vimgrep",
-            "--word-regexp",
-            word,
+            rg_mode,
+            rg_word,
         }
 
         -- If not quick (location list mode), restrict to current file
@@ -73,18 +100,66 @@ function M.replace_word_under_cursor(quick)
         -- Get results from rg invocation
         local results = vim.fn.systemlist(rg_cmd)
 
+        -- Prepare table for inspecting later the items in lists
+        local items = {}
+
         -- Set quickfix list or location list accordingly
         if quick then
             vim.fn.setqflist({}, " ", { title = "Ripgrep", lines = results })
+            items = vim.fn.getqflist()
         else
             vim.fn.setloclist(0, {}, " ", { title = "Ripgrep", lines = results })
+            items = vim.fn.getloclist(0)
+        end
+
+        -- Detect unsaved buffers that match quickfix entries
+        local unsaved_files = {}
+        local checked_files = {}
+
+        -- For each item in quick or location list
+        for _, item in ipairs(items) do
+            local filename = item.filename or vim.fn.bufname(item.bufnr or 0)
+            if filename ~= "" and not checked_files[filename] then
+                local bufnr = vim.fn.bufnr(filename)
+                if bufnr ~= -1 then
+                    local ok, modified = pcall(vim.api.nvim_get_option_value, "modified", { buf = bufnr })
+                    if ok and modified then
+                        table.insert(unsaved_files, filename)
+                    end
+                end
+                checked_files[filename] = true
+            end
+        end
+
+        if #unsaved_files > 0 then
+            -- Build warning message
+            local msg = "⚠️ Unsaved buffers detected that match your search:\n\n"
+                .. table.concat(unsaved_files, "\n")
+                .. "\n\nProceed anyway?"
+
+            -- Ask user confirmation (1 = Yes, 2 = No)
+            local choice = vim.fn.confirm(msg, "&Yes\n&No", 2, "Warning")
+
+            if choice ~= 1 then
+                print("Search/replace aborted to prevent conflicts.")
+                return
+            end
         end
     else
         -- fallback to vim's builtin vimgrep/lvimgrep
         local grep_cmd = quick and "vimgrep" or "lvimgrep"
         local target = quick and "**/*" or "%"
 
-        local vimgrep_cmd = string.format("%svimgrep /\\<%s\\>/j %s", grep_cmd, word, target)
+        local vimgrep_cmd = string.format("%svimgrep", grep_cmd)
+
+        -- Use whole word only if not in selection mode
+        if use_selection then
+            vimgrep_cmd = string.format("%s /%s/j %s", vimgrep_cmd, word_escaped, target)
+        else
+            vimgrep_cmd = string.format("%s /\\<%s\\>/j %s", vimgrep_cmd, word_escaped, target)
+        end
+
+        -- Run it
         vim.cmd(vimgrep_cmd)
     end
 
@@ -99,8 +174,12 @@ function M.replace_word_under_cursor(quick)
     local prefix = quick and ":cfdo " or ":lfdo "
     vim.api.nvim_feedkeys(prefix, "n", false)
 
-    -- Add substitution string
-    vim.api.nvim_feedkeys(string.format("%%s/\\<%s\\>/%s/gI | update", word, word), "n", false)
+    -- Add substitution string, using whole word only if not in selection mode
+    if use_selection then
+        vim.api.nvim_feedkeys(string.format("%%s/%s/%s/gI | update", word, word), "n", false)
+    else
+        vim.api.nvim_feedkeys(string.format("%%s/\\<%s\\>/%s/gI | update", word, word), "n", false)
+    end
 
     -- Close opened window
     local close_cmd = quick and " | cclose" or " | lclose"
