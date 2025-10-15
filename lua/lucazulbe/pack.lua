@@ -118,6 +118,7 @@ vim.api.nvim_set_hl(0, "MiniHipatternsAlert", { fg = "#232136", bg = "#ff5555", 
 vim.api.nvim_set_hl(0, "MiniHipatternsInfo", { fg = "#232136", bg = "#5fd7ff", bold = true })
 vim.api.nvim_set_hl(0, "MiniHipatternsDebug", { fg = "#232136", bg = "#afff87", bold = true })
 vim.api.nvim_set_hl(0, "MiniHipatternsPerf", { fg = "#232136", bg = "#ff9e64", bold = true })
+vim.api.nvim_set_hl(0, "MiniHipatternsTest", { fg = "#232136", bg = "#ff6842", bold = true })
 
 require("mini.hipatterns").setup({
     highlighters = {
@@ -129,6 +130,7 @@ require("mini.hipatterns").setup({
         info  = { pattern = '%f[%w]()INFO()%f[%W]', group = 'MiniHipatternsInfo' },
         debug = { pattern = '%f[%w]()DEBUG()%f[%W]', group = 'MiniHipatternsDebug' },
         perf  = { pattern = '%f[%w]()PERF()%f[%W]', group = 'MiniHipatternsPerf' },
+        test  = { pattern = '%f[%w]()TEST()%f[%W]', group = 'MiniHipatternsTest' },
 
 
         -- Highlight hex color strings (`#rrggbb`) using that color
