@@ -9,7 +9,8 @@ for _, key in ipairs { '<Up>', '<Down>', '<Left>', '<Right>', '<PageUp>', '<Page
 end
 
 -- General
-map("n", "<leader>O", function() vim.cmd("restart") end, { desc = "[Neovim] Restart" })
+map("n", "<leader>Q", ":quitall<CR>", { desc = "[Neovim] Quit All" })
+map("n", "<leader>O", ":restart<CR>", { desc = "[Neovim] Restart" })
 map("n", "<leader>vvv", "<cmd>e ~/.config/nvim<CR>", { desc = "[Neovim] Edit config" });
 
 -- Working with current file
