@@ -3,8 +3,11 @@ local map = vim.keymap.set
 
 -- Install plugins
 vim.pack.add({
-    -- Theme
+    -- RosePine Theme
     { src = "https://github.com/rose-pine/neovim" },
+
+    -- Catppuccin Theme
+    { src = "https://github.com/catppuccin/nvim" },
 
     -- Useless automation for sad mood
     { src = "https://github.com/Eandrju/cellular-automaton.nvim" },
@@ -86,6 +89,9 @@ vim.pack.add({
 
     -- Lightweight yet powerful formatter
     { src = "https://github.com/stevearc/conform.nvim" },
+
+    -- Plenary
+    { src = "https://github.com/nvim-lua/plenary.nvim" },
 
     -- A hackable markdown, Typst, latex, html(inline) & YAML previewer
     { src = "https://github.com/OXY2DEV/markview.nvim" },
