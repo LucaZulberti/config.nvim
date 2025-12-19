@@ -5,7 +5,7 @@ require("lucazulbe.lsp")
 require("lucazulbe.theme")
 
 -- Appearance
-vim.cmd("colorscheme rose-pine")
+vim.cmd("colorscheme catppuccin-mocha")
 vim.cmd(":hi statusline guibg=NONE")
 
 -- Give me a nice motd!
