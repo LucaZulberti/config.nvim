@@ -39,7 +39,6 @@ vim.pack.add({
     { src = "https://github.com/echasnovski/mini.operators" },
 
     -- Fast and feature-rich surround actions
-    -- TODO: study
     { src = "https://github.com/echasnovski/mini.surround" },
 
     -- Autocompletion and signature help plugin
@@ -92,6 +91,9 @@ vim.pack.add({
 
     -- Plenary
     { src = "https://github.com/nvim-lua/plenary.nvim" },
+
+    -- CMake Tools
+    { src = "https://github.com/Civitasv/cmake-tools.nvim" },
 
     -- A hackable markdown, Typst, latex, html(inline) & YAML previewer
     { src = "https://github.com/OXY2DEV/markview.nvim" },
@@ -161,24 +163,7 @@ require("fidget").setup()
 require("mason").setup()
 require("mason-lspconfig").setup()
 
-require("conform").setup({
-    formatters_by_ft = {
-        typescript = { "prettier" },
-        typescriptreact = { "prettier" },
-        javascript = { "prettier" },
-        html = { "prettier" },
-        htmlangular = { "prettier" },
-        css = { "prettier" },
-        json = { "prettier" },
-        yaml = { "prettier" },
-        markdown = { "prettier" },
-    },
-    format_on_save = {
-        -- These options will be passed to conform.format()
-        timeout_ms = 2000,
-        lsp_format = "fallback",
-    },
-})
+require("lucazulbe.pack.conform")
 
 require("typst-preview").setup()
 
