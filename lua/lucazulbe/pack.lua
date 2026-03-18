@@ -100,6 +100,9 @@ vim.pack.add({
 
     -- Low latency typst preview
     { src = "https://github.com/chomosuke/typst-preview.nvim" },
+
+    -- Supercharge your Rust experience in Neovim
+    { src = "https://github.com/mrcjkb/rustaceanvim" },
 })
 
 -- Configure plugins
