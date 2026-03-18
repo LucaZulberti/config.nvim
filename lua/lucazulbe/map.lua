@@ -3,69 +3,71 @@ local funcs = require("lucazulbe.functions")
 -- Shortcut
 local map = vim.keymap.set
 
+-- Helper for less boilerplate
+local function rmap(mode, lhs, fn, desc)
+    map(mode, lhs, fn, { desc = desc })
+end
+
 -- Force to learn Vim-Motions
 for _, key in ipairs { '<Up>', '<Down>', '<Left>', '<Right>', '<PageUp>', '<PageDown>', '<Home>', '<End>' } do
     funcs.disable_keymap_and_notify(key)
 end
 
 -- General
-map("n", "<leader>Q", ":quitall<CR>", { desc = "[Neovim] Quit All" })
-map("n", "<leader>O", ":restart<CR>", { desc = "[Neovim] Restart" })
-map("n", "<leader>vvv", "<cmd>e ~/.config/nvim<CR>", { desc = "[Neovim] Edit config" });
+rmap("n", "<leader>Q", ":quitall<CR>", "[Neovim] Quit")
+rmap("n", "<leader>O", ":restart<CR>", "[Neovim] Restart")
+rmap("n", "<leader>vvv", "<cmd>e ~/.config/nvim<CR>", "[Neovim] Edit config");
 
 -- Working with current file
-map("n", "<leader>o", ":update<CR> :source<CR>", { desc = "[File] Source" })
-map("n", "<leader>w", ":write<CR>", { desc = "[File] Write" })
-map("n", "<leader>q", ":quit<CR>", { desc = "[File] Quit" })
-map("n", "<leader>r", "<cmd>edit!<CR>", { desc = "[File] Reload" })
-map("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "[File] Make executable" })
-map("n", "<leader>zr", function()
+rmap("n", "<leader>o", ":update<CR> :source<CR>", "[File] Source")
+rmap("n", "<leader>w", ":write<CR>", "[File] Write")
+rmap("n", "<leader>q", ":quit<CR>", "[File] Quit")
+rmap("n", "<leader>r", "<cmd>edit!<CR>", "[File] Reload")
+rmap("n", "<leader>x", "<cmd>!chmod +x %<CR>", "[File] Make executable")
+rmap("n", "<leader>zr", function()
     vim.fn.setreg([["]], vim.fn.expand("%"))
     print('Copied: ' .. vim.fn.expand("%"))
-end, { desc = '[File] Copy relative path' })
-map("n", "<leader>zf", function()
+end, '[File] Copy relative path')
+rmap("n", "<leader>zf", function()
     vim.fn.setreg([["]], vim.fn.expand("%:p"))
     print('Copied: ' .. vim.fn.expand("%:p"))
-end, { desc = '[File] Copy full path' })
-map("n", "<leader>Zr", function()
+end, '[File] Copy full path')
+rmap("n", "<leader>Zr", function()
     vim.fn.setreg("+", vim.fn.expand("%"))
     print('Copied (clipboard): ' .. vim.fn.expand("%"))
-end, { desc = '[File] Copy relative path to system clipboard' })
-map("n", "<leader>Zf", function()
+end, '[File] Copy relative path to system clipboard')
+rmap("n", "<leader>Zf", function()
     vim.fn.setreg("+", vim.fn.expand("%:p"))
     print('Copied (clipboard): ' .. vim.fn.expand("%:p"))
-end, { desc = '[File] Copy full path to system clipboard' })
+end, '[File] Copy full path to system clipboard')
 
 -- Text manipulation
-map("i", "<C-c>", "<Esc>", { desc = "[Text] Escape while in insert mode" })
-map("n", "J", "mzJ`z", { desc = "[Text] Join next line" })
-map("v", "J", ":m '>+1<CR>gv=gv", { desc = "[Text] Move selected lines down" })
-map("v", "K", ":m '<-2<CR>gv=gv", { desc = "[Text] Move selected lines up" })
-map("n", "<leader>s", function()
-    funcs.replace_word_under_cursor_or_selection(false, false)
-end, { desc = "[Text] Replace word under cursor (location list, current file)" })
-map("n", "<leader>S", function()
-    funcs.replace_word_under_cursor_or_selection(true, false)
-end, { desc = "[Text] Replace word under cursor (quickfix, all files)" })
-map("v", "<leader>s", function()
-    funcs.replace_word_under_cursor_or_selection(false, true)
-end, { desc = "[Text] Replace selection (location list, current file)" })
-map("v", "<leader>S", function()
-    funcs.replace_word_under_cursor_or_selection(true, true)
-end, { desc = "[Text] Replace selection (quickfix, all files)" })
+rmap("i", "<C-c>", "<Esc>", "[Text] Escape while in insert mode")
+rmap("n", "J", "mzJ`z", "[Text] Join next line")
+rmap("v", "J", ":m '>+1<CR>gv=gv", "[Text] Move selected lines down")
+rmap("v", "K", ":m '<-2<CR>gv=gv", "[Text] Move selected lines up")
+
+-- Custom functions
+rmap("n", "<leader>s", function() funcs.replace_last_search(false) end, "[Text] Replace last search (current file)")
+rmap("n", "<leader>S", function() funcs.replace_last_search(true) end, "[Text] Replace last search (all files)")
+rmap("v", "<leader>s", function() funcs.replace_selection(false) end, "[Text] Replace selection (current file)")
+rmap("v", "<leader>S", function() funcs.replace_selection(true) end, "[Text] Replace selection (all files)")
+rmap("n", "<leader><M-s>", function() funcs.replace_prompted_regex(false) end,
+    "[Text] Replace prompted regex (current file)")
+rmap("n", "<leader><M-S>", function() funcs.replace_prompted_regex(true) end, "[Text] Replace prompted regex (all files)")
 
 -- Cursor
-map("n", "<C-d>", "<C-d>zz", { desc = "[Cursor] Go down and center" })
-map("n", "<C-u>", "<C-u>zz", { desc = "[Cursor] Go up and center" })
-map("n", "n", "nzzzv", { desc = "[Cursor] Go next, center, and unfold" })
-map("n", "N", "Nzzzv", { desc = "[Cursor] Go previous, center, and unfold" })
+rmap("n", "<C-d>", "<C-d>zz", "[Cursor] Go down and center")
+rmap("n", "<C-u>", "<C-u>zz", "[Cursor] Go up and center")
+rmap("n", "n", "nzzzv", "[Cursor] Go next, center, and unfold")
+rmap("n", "N", "Nzzzv", "[Cursor] Go previous, center, and unfold")
 
 -- System clipboard
-map({ "n", "v" }, "<leader>y", [["+y]], { desc = "[Clipboard] Copy" })
-map({ "n", "v" }, "<leader>Y", [["+Y]], { desc = "[Clipboard] Copy line" })
+rmap({ "n", "v" }, "<leader>y", [["+y]], "[Clipboard] Copy")
+rmap({ "n", "v" }, "<leader>Y", [["+Y]], "[Clipboard] Copy line")
 
 -- Void register
-map("x", "<leader>p", function()
+rmap("x", "<leader>p", function()
     -- Get the cursor position at the end of the visual selection.
     -- Returns [bufnum, lnum (line), col (column), offset]
     local end_pos = vim.fn.getpos(".")
@@ -87,14 +89,14 @@ map("x", "<leader>p", function()
         -- Use "P" to paste before the cursor when selection is in the middle of the line.
         vim.cmd([[normal! "_dP]])
     end
-end, { desc = "[Void] Replace without yanking" })
-map({ "n", "v" }, "<leader>d", [["_d]], { desc = "[Void] Delete without yank" })
-map({ "n", "v" }, "<leader>c", [["_c]], { desc = "[Void] Change without yank" })
-map({ "n", "v" }, "<leader>di", [["_di]], { desc = "[Void] Delete inside without yank" })
-map({ "n", "v" }, "<leader>ci", [["_ci]], { desc = "[Void] Change inside without yank" })
+end, "[Void] Replace without yanking")
+rmap({ "n", "v" }, "<leader>d", [["_d]], "[Void] Delete without yank")
+rmap({ "n", "v" }, "<leader>c", [["_c]], "[Void] Change without yank")
+rmap({ "n", "v" }, "<leader>di", [["_di]], "[Void] Delete inside without yank")
+rmap({ "n", "v" }, "<leader>ci", [["_ci]], "[Void] Change inside without yank")
 
 -- Windows
-map("n", "<C-h>", "<C-w>h", { desc = "[Windows] Move to left" })
-map("n", "<C-j>", "<C-w>j", { desc = "[Windows] Move to lower" })
-map("n", "<C-k>", "<C-w>k", { desc = "[Windows] Move to upper" })
-map("n", "<C-l>", "<C-w>l", { desc = "[Windows] Move to right" })
+rmap("n", "<C-h>", "<C-w>h", "[Windows] Move to left")
+rmap("n", "<C-j>", "<C-w>j", "[Windows] Move to lower")
+rmap("n", "<C-k>", "<C-w>k", "[Windows] Move to upper")
+rmap("n", "<C-l>", "<C-w>l", "[Windows] Move to right")
