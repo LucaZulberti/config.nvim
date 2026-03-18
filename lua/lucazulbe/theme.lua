@@ -1,3 +1,7 @@
+-- Appearance
+vim.cmd("colorscheme catppuccin-mocha")
+vim.cmd(":hi statusline guibg=NONE")
+
 -- Active window
 vim.api.nvim_create_autocmd("WinEnter", {
     pattern = "*",
