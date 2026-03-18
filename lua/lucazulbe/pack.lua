@@ -168,6 +168,8 @@ require("mason-lspconfig").setup()
 
 require("lucazulbe.pack.conform")
 
+require("cmake-tools").setup {}
+
 require("typst-preview").setup()
 
 -- Remap plugin commands
