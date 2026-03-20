@@ -1,6 +1,11 @@
 -- Shortcut
 local map = vim.keymap.set
 
+-- Helper for less boilerplate
+local function rmap(mode, lhs, fn, desc)
+    map(mode, lhs, fn, { desc = desc })
+end
+
 -- Install plugins
 vim.pack.add({
     -- RosePine Theme
@@ -95,6 +100,20 @@ vim.pack.add({
     -- CMake Tools
     { src = "https://github.com/Civitasv/cmake-tools.nvim" },
 
+    -- Debug Adapter Protocol client implementation for Neovim
+    { src = "https://github.com/mfussenegger/nvim-dap" },
+
+    -- Inline virtual text for variable values
+    { src = "https://github.com/theHamsta/nvim-dap-virtual-text" },
+
+    -- A library for asynchronous IO in Neovim
+    -- Needed by:
+    --  - nvim-dap-ui
+    { src = "https://github.com/nvim-neotest/nvim-nio" },
+
+    -- A UI for nvim-dap
+    { src = "https://github.com/rcarriga/nvim-dap-ui" },
+
     -- A hackable markdown, Typst, latex, html(inline) & YAML previewer
     { src = "https://github.com/OXY2DEV/markview.nvim" },
 
@@ -168,41 +187,41 @@ require("mason-lspconfig").setup()
 
 require("lucazulbe.pack.conform")
 
-require("cmake-tools").setup {}
+require("lucazulbe.pack.cmake-dap")
 
 require("typst-preview").setup()
 
 -- Remap plugin commands
 ---
 
-map("n", "<leader>R", "<cmd>CellularAutomaton make_it_rain<CR>", { desc = "[Meme] Make it rain" })
+rmap("n", "<leader>R", "<cmd>CellularAutomaton make_it_rain<CR>", "[Meme] Make it rain")
 
-map('n', '<leader>e', ":Oil<CR>", { desc = "[Oil] Explore filesystem" })
+rmap('n', '<leader>e', ":Oil<CR>", "[Oil] Explore filesystem")
 
-map('n', '<leader>pf', ":Pick files<CR>", { desc = "[Mini.Pick] Files" })
-map('n', '<leader>ph', ":Pick help<CR>", { desc = "[Mini.Pick] Help" })
-map('n', '<leader>pd', ":Pick diagnostic<CR>", { desc = "[Mini.Pick] Diagnostic" })
-map('n', '<leader>pe', ":Pick explorer<CR>", { desc = "[Mini.Pick] Explorer" })
-map('n', '<leader>ps', ":Pick grep_live<CR>", { desc = "[Mini.Pick] Grep Live" })
-map('n', '<leader>pa', ":Pick grep<CR>", { desc = "[Mini.Pick] Grep" })
-map('n', '<leader>pgf', ":Pick git_files<CR>", { desc = "[Mini.Pick] Git Files" })
-map('n', '<leader>pgl', ":Pick git_commits<CR>", { desc = "[Mini.Pick] Git Log" })
-map('n', '<leader>pgh', ":Pick git_hunks<CR>", { desc = "[Mini.Pick] Git Hunks" })
-map('n', '<leader>plq', ":Pick list scope='quickfix'<CR>", { desc = "[Mini.Pick] Quickfix List" })
-map('n', '<leader>pll', ":Pick list scope='location'<CR>", { desc = "[Mini.Pick] Location List" })
-map('n', '<leader>plj', ":Pick list scope='jump'<CR>", { desc = "[Mini.Pick] Jump List" })
-map('n', '<leader>plc', ":Pick list scope='change'<CR>", { desc = "[Mini.Pick] Change List" })
-map('n', '<leader>pm', ":Pick marks<CR>", { desc = "[Mini.Pick] Marks" })
-map('n', '<leader>pr', ":Pick registers<CR>", { desc = "[Mini.Pick] Registers" })
-map('n', '<leader>pk', ":Pick keymaps<CR>", { desc = "[Mini.Pick] Keymaps" })
+rmap('n', '<leader>pf', ":Pick files<CR>", "[Mini.Pick] Files")
+rmap('n', '<leader>ph', ":Pick help<CR>", "[Mini.Pick] Help")
+rmap('n', '<leader>pd', ":Pick diagnostic<CR>", "[Mini.Pick] Diagnostic")
+rmap('n', '<leader>pe', ":Pick explorer<CR>", "[Mini.Pick] Explorer")
+rmap('n', '<leader>ps', ":Pick grep_live<CR>", "[Mini.Pick] Grep Live")
+rmap('n', '<leader>pa', ":Pick grep<CR>", "[Mini.Pick] Grep")
+rmap('n', '<leader>pgf', ":Pick git_files<CR>", "[Mini.Pick] Git Files")
+rmap('n', '<leader>pgl', ":Pick git_commits<CR>", "[Mini.Pick] Git Log")
+rmap('n', '<leader>pgh', ":Pick git_hunks<CR>", "[Mini.Pick] Git Hunks")
+rmap('n', '<leader>plq', ":Pick list scope='quickfix'<CR>", "[Mini.Pick] Quickfix List")
+rmap('n', '<leader>pll', ":Pick list scope='location'<CR>", "[Mini.Pick] Location List")
+rmap('n', '<leader>plj', ":Pick list scope='jump'<CR>", "[Mini.Pick] Jump List")
+rmap('n', '<leader>plc', ":Pick list scope='change'<CR>", "[Mini.Pick] Change List")
+rmap('n', '<leader>pm', ":Pick marks<CR>", "[Mini.Pick] Marks")
+rmap('n', '<leader>pr', ":Pick registers<CR>", "[Mini.Pick] Registers")
+rmap('n', '<leader>pk', ":Pick keymaps<CR>", "[Mini.Pick] Keymaps")
 
-map('n', '<leader>f', function()
+rmap('n', '<leader>f', function()
     require("mini.files").open()
-end, { desc = "[Mini.Files] Open" })
+end, "[Mini.Files] Open")
 
-map({ 'n', 'v' }, '<leader>lf', function()
+rmap({ 'n', 'v' }, '<leader>lf', function()
     require("conform").format({
         async = true,
         lsp_format = "fallback",
     })
-end, { desc = "[Conform] Format current buffer or selection" })
+end, "[Conform] Format current buffer or selection")
