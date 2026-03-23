@@ -47,6 +47,76 @@ function M.disable_keymap_and_notify(key)
     end, { desc = "[General] " .. key .. " is disabled, show reminder", noremap = true, silent = true })
 end
 
+function M.move_vsep(offset)
+    local cur = vim.fn.winnr()
+    local left = vim.fn.winnr("h")
+    local right = vim.fn.winnr("l")
+
+    -- No vertical split here.
+    if left == cur and right == cur then
+        return
+    end
+
+    if offset < 0 then
+        -- Move a separator left.
+        if left ~= cur then
+            -- Move current window's left border.
+            vim.fn.win_move_separator(left, offset)
+        else
+            -- No left border: move current window's right border.
+            vim.fn.win_move_separator(cur, offset)
+        end
+    else
+        -- Move a separator right.
+        if right ~= cur then
+            -- Move current window's right border.
+            vim.fn.win_move_separator(cur, offset)
+        else
+            -- No right border: move current window's left border.
+            vim.fn.win_move_separator(left, offset)
+        end
+    end
+end
+
+function M.move_hsep(offset)
+    local cur = vim.fn.winnr()
+    local up = vim.fn.winnr("k")
+    local down = vim.fn.winnr("j")
+
+    -- No horizontal split here.
+    if up == cur and down == cur then
+        return
+    end
+
+    if offset < 0 then
+        -- Move a separator up.
+        if up ~= cur then
+            -- Move current window's top border.
+            vim.fn.win_move_statusline(up, offset)
+        else
+            -- No top border: move current window's bottom border.
+            vim.fn.win_move_statusline(cur, offset)
+        end
+    else
+        -- Move a separator down.
+        if down ~= cur then
+            -- Move current window's bottom border.
+            vim.fn.win_move_statusline(cur, offset)
+        else
+            -- No bottom border: move current window's top border.
+            vim.fn.win_move_statusline(up, offset)
+        end
+    end
+end
+
+function M.resize_current_width(delta)
+    vim.cmd(("vertical resize %s%d"):format(delta > 0 and "+" or "-", math.abs(delta)))
+end
+
+function M.resize_current_height(delta)
+    vim.cmd(("resize %s%d"):format(delta > 0 and "+" or "-", math.abs(delta)))
+end
+
 -- Helper: capture the current visual selection without clobbering the unnamed
 -- register. This keeps the function safe during normal editing sessions.
 local function get_visual_selection()

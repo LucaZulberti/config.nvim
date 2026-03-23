@@ -100,3 +100,37 @@ rmap("n", "<C-h>", "<C-w>h", "[Windows] Move to left")
 rmap("n", "<C-j>", "<C-w>j", "[Windows] Move to lower")
 rmap("n", "<C-k>", "<C-w>k", "[Windows] Move to upper")
 rmap("n", "<C-l>", "<C-w>l", "[Windows] Move to right")
+
+-- Ctrl+Arrows: move border by direction
+rmap("n", "<C-Left>", function()
+    funcs.move_vsep(-1)
+end, "Move split left")
+
+rmap("n", "<C-Right>", function()
+    funcs.move_vsep(1)
+end, "Move split right")
+
+rmap("n", "<C-Up>", function()
+    funcs.move_hsep(-1)
+end, "Move split up")
+
+rmap("n", "<C-Down>", function()
+    funcs.move_hsep(1)
+end, "Move split down")
+
+-- Shift+Arrows: resize current window
+rmap("n", "<S-Left>", function()
+    funcs.resize_current_width(-vim.v.count1)
+end, "Shrink current window width")
+
+rmap("n", "<S-Right>", function()
+    funcs.resize_current_width(vim.v.count1)
+end, "Grow current window width")
+
+rmap("n", "<S-Up>", function()
+    funcs.resize_current_height(vim.v.count1)
+end, "Grow current window height")
+
+rmap("n", "<S-Down>", function()
+    funcs.resize_current_height(-vim.v.count1)
+end, "Shrink current window height")
