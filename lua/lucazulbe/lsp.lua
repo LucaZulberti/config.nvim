@@ -41,6 +41,27 @@ vim.lsp.config("*", {
     end,
 })
 
+-- Check if running on macOS
+local is_mac = vim.loop.os_uname().sysname == "Darwin"
+
+-- Clangd on macOS from Homebrew
+if is_mac then
+    -- Check if clangd exists in Homebrew's LLVM path
+    local clangd_path = "/opt/homebrew/opt/llvm/bin/clangd"
+    local file = io.open(clangd_path, "r")
+
+    if file then
+        file:close()
+        vim.lsp.config("clangd", {
+            cmd = {
+                "/opt/homebrew/opt/llvm/bin/clangd",
+            },
+        })
+    else
+        vim.notify("clangd not found at Homebrew path", vim.log.levels.WARN)
+    end
+end
+
 -- Configure tinymist for Typst authoring.
 vim.lsp.config("tinymist", {
     settings = {
