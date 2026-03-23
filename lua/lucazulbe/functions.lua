@@ -1,142 +1,207 @@
 local M = {}
 
--- Convert to Terminal codes
+-- Shortcut for defining keymaps.
+local map = vim.keymap.set
+
+---Define a keymap with either a description string or a full options table.
+---@param mode string|string[]
+---@param lhs string
+---@param rhs string|function
+---@param opts_or_desc? string|table
+function M.rmap(mode, lhs, rhs, opts_or_desc)
+    local opts
+
+    if type(opts_or_desc) == "string" then
+        -- Treat a string as the mapping description.
+        opts = { desc = opts_or_desc }
+    elseif type(opts_or_desc) == "table" then
+        -- Copy user options so this helper never mutates the caller's table.
+        opts = vim.tbl_extend("keep", {}, opts_or_desc)
+    elseif opts_or_desc == nil then
+        -- Allow the helper to be used without extra options.
+        opts = {}
+    else
+        error("rmap: fourth argument must be a string, table, or nil")
+    end
+
+    -- Forward the normalized options table to vim.keymap.set.
+    map(mode, lhs, rhs, opts)
+end
+
+---Convert a key string to terminal codes.
+---@param str string
+---@return string
 function M.t(str)
+    -- Expand special key notation such as <CR>, <Esc>, or <C-w> into the
+    -- terminal codes expected by Neovim input APIs.
     return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
+---Show a one-line floating notification near the cursor until the next keypress.
+---@param line string
 function M.notify_hover(line)
+    -- Compute the displayed width so the floating window fits the rendered text.
     local width = vim.fn.strdisplaywidth(line)
 
-    -- Create scratch buffer (no file, listed)
+    -- Create an unlisted scratch buffer and write the message into it.
     local buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, { line })
 
+    -- Place a minimal floating window next to the cursor.
     local opts = {
-        relative = 'cursor',
+        relative = "cursor",
         width = width,
         height = 1,
         col = 1,
         row = 1,
-        style = 'minimal',
-        border = 'rounded',
+        style = "minimal",
+        border = "rounded",
     }
 
+    -- Open the floating window without entering it.
     local win = vim.api.nvim_open_win(buf, false, opts)
 
-    -- Define handler ID variable here so we can unregister it inside callback
+    -- Store the handler id so the callback can unregister itself after firing.
     local handler_id
     local handler = function()
-        -- Close hover window on keypress
+        -- Close the floating window if it still exists.
         if vim.api.nvim_win_is_valid(win) then
             vim.api.nvim_win_close(win, true)
         end
 
-        -- Unregister the handler after first keypress
+        -- Remove the temporary key handler after the first keypress.
         vim.on_key(nil, handler_id)
     end
 
-    -- Actually register the handler and save the namespace ID for later unregistration
+    -- Register the one-shot key handler.
     handler_id = vim.on_key(handler)
 end
 
--- Disable a give keymap
+---Disable a keymap in normal, visual, and insert mode and show a reminder.
+---@param key string
 function M.disable_keymap_and_notify(key)
-    vim.keymap.set({ 'n', 'v', 'i' }, key, function()
+    -- Override the key in the main editing modes and replace it with a reminder.
+    vim.keymap.set({ "n", "v", "i" }, key, function()
         M.notify_hover("Key " .. key .. " is disabled, use Vim motions!")
-    end, { desc = "[General] " .. key .. " is disabled, show reminder", noremap = true, silent = true })
+    end, {
+        desc = "[General] " .. key .. " is disabled, show reminder",
+        noremap = true,
+        silent = true,
+    })
 end
 
+---Move a vertical window separator left or right.
+---
+---The function tries to move the separator that matches the requested visual
+---direction rather than merely resizing the current window.
+---@param offset integer Negative moves left, positive moves right.
 function M.move_vsep(offset)
+    -- Identify the current window and its horizontal neighbors.
     local cur = vim.fn.winnr()
     local left = vim.fn.winnr("h")
     local right = vim.fn.winnr("l")
 
-    -- No vertical split here.
+    -- Abort when there is no vertical split in this layout.
     if left == cur and right == cur then
         return
     end
 
     if offset < 0 then
-        -- Move a separator left.
+        -- Moving left means preferring the current window's left border when it
+        -- exists. If there is no left neighbor, move the right border instead.
         if left ~= cur then
-            -- Move current window's left border.
             vim.fn.win_move_separator(left, offset)
         else
-            -- No left border: move current window's right border.
             vim.fn.win_move_separator(cur, offset)
         end
     else
-        -- Move a separator right.
+        -- Moving right means preferring the current window's right border when it
+        -- exists. If there is no right neighbor, move the left border instead.
         if right ~= cur then
-            -- Move current window's right border.
             vim.fn.win_move_separator(cur, offset)
         else
-            -- No right border: move current window's left border.
             vim.fn.win_move_separator(left, offset)
         end
     end
 end
 
+---Move a horizontal window separator up or down.
+---
+---The function tries to move the separator that matches the requested visual
+---direction rather than merely resizing the current window.
+---@param offset integer Negative moves up, positive moves down.
 function M.move_hsep(offset)
+    -- Identify the current window and its vertical neighbors.
     local cur = vim.fn.winnr()
     local up = vim.fn.winnr("k")
     local down = vim.fn.winnr("j")
 
-    -- No horizontal split here.
+    -- Abort when there is no horizontal split in this layout.
     if up == cur and down == cur then
         return
     end
 
     if offset < 0 then
-        -- Move a separator up.
+        -- Moving up means preferring the current window's top border when it
+        -- exists. If there is no upper neighbor, move the bottom border instead.
         if up ~= cur then
-            -- Move current window's top border.
             vim.fn.win_move_statusline(up, offset)
         else
-            -- No top border: move current window's bottom border.
             vim.fn.win_move_statusline(cur, offset)
         end
     else
-        -- Move a separator down.
+        -- Moving down means preferring the current window's bottom border when it
+        -- exists. If there is no lower neighbor, move the top border instead.
         if down ~= cur then
-            -- Move current window's bottom border.
             vim.fn.win_move_statusline(cur, offset)
         else
-            -- No bottom border: move current window's top border.
             vim.fn.win_move_statusline(up, offset)
         end
     end
 end
 
+---Resize the current window width.
+---@param delta integer Positive widens, negative narrows.
 function M.resize_current_width(delta)
+    -- Build a :vertical resize command using + or - based on the requested delta.
     vim.cmd(("vertical resize %s%d"):format(delta > 0 and "+" or "-", math.abs(delta)))
 end
 
+---Resize the current window height.
+---@param delta integer Positive increases height, negative decreases height.
 function M.resize_current_height(delta)
+    -- Build a :resize command using + or - based on the requested delta.
     vim.cmd(("resize %s%d"):format(delta > 0 and "+" or "-", math.abs(delta)))
 end
 
--- Helper: capture the current visual selection without clobbering the unnamed
--- register. This keeps the function safe during normal editing sessions.
+---Return the current visual selection without modifying the unnamed register.
+---@return string
 local function get_visual_selection()
+    -- Save the unnamed register so this helper does not disturb normal editing.
     local old_reg = vim.fn.getreg('"')
     local old_regtype = vim.fn.getregtype('"')
 
+    -- Yank the current visual selection into the unnamed register.
     vim.cmd('normal! "vy')
     local text = vim.fn.getreg('"')
 
+    -- Restore the previous register contents and type.
     vim.fn.setreg('"', old_reg, old_regtype)
     return text
 end
 
--- Helper: choose a substitute delimiter that does not appear in the pattern or
--- replacement. This reduces escaping noise in the generated command line.
+---Pick an Ex delimiter that does not occur in any provided string.
+---@param ... string
+---@return string
 local function pick_delim(...)
+    -- Try a small set of readable delimiters so generated commands need less
+    -- escaping.
     local candidates = { "/", "#", "@", "|", ";", ":" }
 
     for _, d in ipairs(candidates) do
         local ok = true
+
+        -- Reject a delimiter as soon as it appears in any argument.
         for i = 1, select("#", ...) do
             local s = tostring(select(i, ...))
             if s:find(d, 1, true) then
@@ -144,42 +209,71 @@ local function pick_delim(...)
                 break
             end
         end
+
         if ok then
             return d
         end
     end
 
+    -- Fall back to / if every preferred delimiter appears in the inputs.
     return "/"
 end
 
--- Helper: escape only the chosen Ex delimiter.
+---Escape only the chosen Ex delimiter in a string.
+---@param text string
+---@param delim string
+---@return string
 local function escape_for_delim(text, delim)
+    -- Escape just the active delimiter so the command stays readable.
     return text:gsub(vim.pesc(delim), "\\" .. delim)
 end
 
--- Helper: turn plain text into a literal Vim pattern using \V.
--- Used for selection mode, where regex semantics are not wanted.
+---Convert plain text into a very nomagic Vim pattern.
+---@param text string
+---@param delim string
+---@return string
 local function vim_literal_pattern(text, delim)
+    -- Escape backslashes first because Vim patterns treat them specially.
     text = text:gsub("\\", "\\\\")
+
+    -- Escape the chosen command delimiter so the pattern remains syntactically
+    -- valid inside :substitute or :vimgrep.
     text = escape_for_delim(text, delim)
+
+    -- Prefix with \V so the text is matched literally instead of as a regex.
     return "\\V" .. text
 end
 
--- Helper: escape replacement text for the replacement side of :substitute.
+---Escape text for the replacement side of :substitute.
+---@param text string
+---@param delim string
+---@return string
 local function escape_sub_replacement(text, delim)
+    -- Escape backslashes because replacement strings interpret them specially.
     text = text:gsub("\\", "\\\\")
+
+    -- Escape & so it is inserted literally instead of expanding to the match.
     text = text:gsub("&", "\\&")
+
+    -- Escape the active delimiter so the replacement stays inside the command.
     text = escape_for_delim(text, delim)
+
     return text
 end
 
--- Helper: get the active result list depending on search scope.
+---Return the active result list for the selected scope.
+---@param quick boolean True for quickfix, false for location list.
+---@return table
 local function get_result_list(quick)
+    -- Use the global quickfix list for multi-file mode, otherwise the current
+    -- window's location list.
     return quick and vim.fn.getqflist() or vim.fn.getloclist(0)
 end
 
--- Helper: clear the active result list to avoid stale matches being reused.
+---Clear the active result list.
+---@param quick boolean True for quickfix, false for location list.
 local function clear_result_list(quick)
+    -- Replace the active list contents so stale matches are not reused later.
     if quick then
         vim.fn.setqflist({}, "r", { items = {} })
     else
@@ -187,20 +281,28 @@ local function clear_result_list(quick)
     end
 end
 
--- Helper: inspect current quickfix/location-list entries and warn if any
--- matching file is also open and modified in memory.
+---Warn when any matched file is open and modified in memory.
+---@param quick boolean True for quickfix, false for location list.
+---@return boolean proceed True when the operation may continue.
 local function warn_if_modified_matches(quick)
+    -- Inspect the current search results and collect files that are open and
+    -- modified but not yet written.
     local items = get_result_list(quick)
     local unsaved_files = {}
     local checked_files = {}
 
     for _, item in ipairs(items) do
+        -- Prefer the explicit filename from the item, otherwise derive it from the
+        -- buffer number when available.
         local filename = item.filename or vim.fn.bufname(item.bufnr or 0)
 
+        -- Check each file only once even if multiple matches occur inside it.
         if filename ~= "" and not checked_files[filename] then
             local bufnr = vim.fn.bufnr(filename)
 
             if bufnr ~= -1 then
+                -- Query the modified flag safely because option lookup may fail for
+                -- some edge cases.
                 local ok, modified = pcall(
                     vim.api.nvim_get_option_value,
                     "modified",
@@ -215,6 +317,7 @@ local function warn_if_modified_matches(quick)
         end
     end
 
+    -- Ask for confirmation before continuing when unsaved matching buffers exist.
     if #unsaved_files > 0 then
         local msg = "Unsaved buffers detected that match your search:\n\n"
             .. table.concat(unsaved_files, "\n")
@@ -230,26 +333,25 @@ local function warn_if_modified_matches(quick)
     return true
 end
 
--- Run :vimgrep / :lvimgrep safely.
---
--- Returns:
---   true  -> search completed and the result list is non-empty
---   false -> no matches or command failure
+---Run :vimgrep or :lvimgrep and populate the corresponding result list.
+---@param quick boolean True for quickfix across files, false for location list in current file.
+---@param search_pattern string Vim regex pattern.
+---@return boolean ok True when matches were found and the list is non-empty.
 local function run_vimgrep_safe(quick, search_pattern)
+    -- Select the grep command and target scope based on the requested mode.
     local grep_cmd = quick and "vimgrep" or "lvimgrep"
     local target = quick and "**/*" or "%"
 
-    -- Only the command delimiter must be escaped here; the pattern itself stays
-    -- a Vim regex.
+    -- Escape only the Ex delimiter. The pattern itself remains a Vim regex.
     local grep_pattern = escape_for_delim(search_pattern, "/")
     local cmd = string.format("%s /%s/gj %s", grep_cmd, grep_pattern, target)
 
-    -- Catch command errors thrown by vim.cmd(), including E480 "No match".
+    -- Catch command errors such as "no match" or invalid regex syntax.
     local ok, err = pcall(vim.cmd, cmd)
     if not ok then
         local err_s = tostring(err)
 
-        -- Clear the active list so stale results are not reused accidentally.
+        -- Clear the list immediately so old matches cannot survive a failed run.
         clear_result_list(quick)
 
         if err_s:match("E480: No match:") then
@@ -260,7 +362,6 @@ local function run_vimgrep_safe(quick, search_pattern)
             return false
         end
 
-        -- Common regex syntax failures.
         if err_s:match("E54:") or err_s:match("E55:") then
             vim.notify("Invalid Vim regex: " .. search_pattern, vim.log.levels.WARN)
             return false
@@ -270,7 +371,7 @@ local function run_vimgrep_safe(quick, search_pattern)
         return false
     end
 
-    -- Defensive check: even without an exception, avoid proceeding with an empty list.
+    -- Defensively reject an empty list even when the command itself succeeded.
     local items = get_result_list(quick)
     if vim.tbl_isempty(items) then
         clear_result_list(quick)
@@ -284,35 +385,27 @@ local function run_vimgrep_safe(quick, search_pattern)
     return true
 end
 
--- Core implementation shared by all public entry points.
---
--- Parameters:
---   quick            boolean
---       true  -> use quickfix and search recursively in all files (**/*)
---       false -> use location list and search only in the current file (%)
---
---   search_pattern   string
---       Vim regex used by :vimgrep / :lvimgrep
---
---   replacement_seed string
---       Initial text placed into the replacement field of the generated
---       :substitute command
---
---   literal_mode     boolean
---       true  -> rebuild substitute pattern literally from replacement_seed
---       false -> use search_pattern as a regex in :substitute too
+---Search matches and prefill a bulk substitute command.
+---@param quick boolean True for quickfix across files, false for location list in current file.
+---@param search_pattern string Vim regex used by :vimgrep or :lvimgrep.
+---@param replacement_seed string Initial replacement text.
+---@param literal_mode boolean True to rebuild the substitute pattern literally.
 local function search_and_prepare_replace(quick, search_pattern, replacement_seed, literal_mode)
+    -- Reject empty input early to avoid generating misleading commands.
     if search_pattern == nil or search_pattern == "" then
         vim.notify("Empty search pattern", vim.log.levels.WARN)
         return
     end
 
+    -- Populate the quickfix or location list with current matches.
     if not run_vimgrep_safe(quick, search_pattern) then
         return
     end
 
     local items = get_result_list(quick)
 
+    -- Keep a second defensive guard in case the active list was emptied between
+    -- steps.
     if vim.tbl_isempty(items) then
         clear_result_list(quick)
         vim.notify(
@@ -322,20 +415,23 @@ local function search_and_prepare_replace(quick, search_pattern, replacement_see
         return
     end
 
+    -- Let the user stop before operating on files that also have unsaved changes.
     if not warn_if_modified_matches(quick) then
         return
     end
 
+    -- Open the result window so matches are visible before the replace command is
+    -- edited or executed.
     if quick then
         vim.cmd("copen")
     else
         vim.cmd("lopen")
     end
 
+    -- Choose a readable delimiter for the generated substitute command.
     local delim = pick_delim(search_pattern, replacement_seed)
 
-    -- For selection mode, rebuild the substitute pattern literally from the
-    -- selected text. For regex modes, preserve the Vim regex as entered.
+    -- Use literal matching for selection mode; otherwise preserve regex behavior.
     local sub_pattern
     if literal_mode then
         sub_pattern = vim_literal_pattern(replacement_seed, delim)
@@ -343,18 +439,19 @@ local function search_and_prepare_replace(quick, search_pattern, replacement_see
         sub_pattern = escape_for_delim(search_pattern, delim)
     end
 
+    -- Escape the initial replacement text for the replacement side of :substitute.
     local sub_replacement = escape_sub_replacement(replacement_seed, delim)
 
+    -- Prefix with cfdo or lfdo depending on whether the operation spans all files
+    -- or just the current one.
     local prefix = quick and ":cfdo " or ":lfdo "
     local close_cmd = quick and " | cclose" or " | lclose"
 
-    -- Use:
-    --   g -> replace all matches on each line
-    --   I -> case-sensitive
-    --   e -> do not error if one file no longer matches during cfdo/lfdo
-    --
-    -- keeppatterns avoids polluting the user's last search pattern while the
-    -- bulk substitute executes.
+    -- Build a substitute command that:
+    --   g  replaces all matches on each line
+    --   I  forces case-sensitive matching
+    --   e  suppresses errors if one file no longer matches during execution
+    --   update writes only when the buffer changed
     local sub_cmd = string.format(
         "keeppatterns %%s%s%s%s%s%sgIe | update%s",
         delim,
@@ -365,36 +462,38 @@ local function search_and_prepare_replace(quick, search_pattern, replacement_see
         close_cmd
     )
 
-    -- Prefill the command line instead of executing immediately.
+    -- Prefill the command line instead of executing immediately so the user can
+    -- inspect and edit it.
     vim.api.nvim_feedkeys(prefix .. sub_cmd, "n", false)
 
-    -- Leave the cursor inside the replacement field for ergonomic editing.
+    -- Move the cursor back into the replacement field for convenient editing.
     local left = vim.api.nvim_replace_termcodes("<Left>", true, false, true)
     local suffix_after_replacement = delim .. "gIe | update" .. close_cmd
     vim.api.nvim_feedkeys(left:rep(#suffix_after_replacement), "n", false)
 end
 
--- Public API: use the current visual selection as a literal pattern.
---
--- Example:
---   M.replace_selection(true)  -> selection across all files
---   M.replace_selection(false) -> selection in current file
+---Prepare a replace command using the current visual selection as a literal pattern.
+---@param quick boolean True for all files, false for current file.
 function M.replace_selection(quick)
+    -- Read the current visual selection without disturbing the unnamed register.
     local sel = get_visual_selection()
     if sel == "" then
         vim.notify("No selection found", vim.log.levels.WARN)
         return
     end
 
+    -- Search literally for the selected text and seed the replacement with the
+    -- same content.
     local search_pattern = vim_literal_pattern(sel, "/")
     search_and_prepare_replace(quick, search_pattern, sel, true)
 end
 
--- Public API: prompt for a Vim regex, initialized from the last search pattern.
---
--- This is useful when you want to tweak @/ but do not need native /-style live
--- preview while typing.
+---Prompt for a Vim regex and prepare a replace command from it.
+---
+---The prompt is initialized from the current search register.
+---@param quick boolean True for all files, false for current file.
 function M.replace_prompted_regex(quick)
+    -- Start from the last search pattern so small refinements are quick.
     local last_search = vim.fn.getreg("/")
     local input = vim.fn.input("Regex: ", last_search)
 
@@ -403,19 +502,19 @@ function M.replace_prompted_regex(quick)
         return
     end
 
-    -- Keep @/ aligned with what the user typed so n/N and later searches feel natural.
+    -- Keep the search register aligned with what the user just entered so n/N and
+    -- later search actions remain consistent.
     vim.fn.setreg("/", input)
 
+    -- Use the entered regex as the search pattern and start with an empty
+    -- replacement.
     search_and_prepare_replace(quick, input, "", false)
 end
 
--- Public API: use the current search register (@/) directly.
---
--- Intended workflow:
---   1. Type /... and refine interactively with incsearch enabled
---   2. Press <CR>
---   3. Call this function
+---Prepare a replace command from the current search register.
+---@param quick boolean True for all files, false for current file.
 function M.replace_last_search(quick)
+    -- Reuse the current search register exactly as produced by / or ?.
     local pattern = vim.fn.getreg("/")
 
     if pattern == nil or pattern == "" then
@@ -423,15 +522,16 @@ function M.replace_last_search(quick)
         return
     end
 
+    -- Build the replace workflow from the existing search pattern.
     search_and_prepare_replace(quick, pattern, "", false)
 end
 
--- Compatibility wrapper preserving the old public function name.
---
--- Revised behavior:
---   use_selection = true  -> literal visual selection
---   use_selection = false -> prompted Vim regex initialized from @/
+---Compatibility wrapper for the previous public API.
+---@param quick boolean True for all files, false for current file.
+---@param use_selection boolean True to use the visual selection, false to prompt for a regex.
 function M.replace_word_under_cursor_or_selection(quick, use_selection)
+    -- Preserve the old public entry point while delegating to the newer
+    -- specialized functions.
     if use_selection then
         M.replace_selection(quick)
     else

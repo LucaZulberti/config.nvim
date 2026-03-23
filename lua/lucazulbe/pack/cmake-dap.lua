@@ -1,10 +1,5 @@
--- Shortcut
-local map = vim.keymap.set
-
--- Helper for less boilerplate
-local function rmap(mode, lhs, fn, desc)
-    map(mode, lhs, fn, { desc = desc })
-end
+local funcs = require("lucazulbe.functions")
+local rmap = funcs.rmap
 
 require("cmake-tools").setup {
     cmake_dap_configuration = {

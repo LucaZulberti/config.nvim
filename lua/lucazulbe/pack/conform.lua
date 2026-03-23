@@ -1,3 +1,6 @@
+local funcs = require("lucazulbe.functions")
+local rmap = funcs.rmap
+
 require("conform").setup({
     formatters = {
         vsg = {
@@ -34,3 +37,10 @@ require("conform").setup({
         lsp_format = "fallback",
     },
 })
+
+rmap({ 'n', 'v' }, '<leader>lf', function()
+    require("conform").format({
+        async = true,
+        lsp_format = "fallback",
+    })
+end, "[Conform] Format current buffer or selection")
