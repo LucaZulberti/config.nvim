@@ -52,6 +52,15 @@ vim.o.expandtab = true
 -- Enable basic automatic indentation for new lines.
 vim.o.smartindent = true
 
+-- Formatting
+-- ---------
+
+-- Format options:
+--  c: auto-wrap comments
+--  r: continue comment on <Enter>
+--  q: allow gq on comments
+vim.o.formatoptions = "crq"
+
 -- Persistence
 -- -----------
 
@@ -68,3 +77,8 @@ vim.o.undofile = true
 
 -- Reduce update latency for diagnostics, CursorHold events, and similar UI refreshes.
 vim.o.updatetime = 250
+
+-- Advanced settings
+-- -----------------
+
+require("lucazulbe.set.filetype")

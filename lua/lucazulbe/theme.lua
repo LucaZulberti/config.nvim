@@ -32,3 +32,22 @@ vim.api.nvim_create_autocmd("WinLeave", {
         vim.opt_local.winhighlight = inactive_winhighlight
     end,
 })
+
+-- ColorColumn
+-- -----------
+
+local colorcolumns = {
+    vhdl = "100",
+}
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "*",
+    callback = function(args)
+        local ft = vim.bo[args.buf].filetype
+        local cc = colorcolumns[ft]
+
+        if cc ~= nil then
+            vim.opt_local.colorcolumn = cc
+        end
+    end,
+})
