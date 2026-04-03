@@ -5,7 +5,7 @@
       "src": "https://github.com/Eandrju/cellular-automaton.nvim"
     },
     "cmake-tools.nvim": {
-      "rev": "2969b800ea889adae14f03ce062618306b1dd836",
+      "rev": "e100f40b117381dadf42a34b0718f8e4350715b2",
       "src": "https://github.com/Civitasv/cmake-tools.nvim"
     },
     "coc.nvim": {
@@ -21,11 +21,11 @@
       "src": "https://github.com/Zeioth/dooku.nvim"
     },
     "fidget.nvim": {
-      "rev": "7fa433a83118a70fe24c1ce88d5f0bd3453c0970",
+      "rev": "889e2e96edef4e144965571d46f7a77bcc4d0ddf",
       "src": "https://github.com/j-hui/fidget.nvim"
     },
     "gitsigns.nvim": {
-      "rev": "caa98e2e5e4c23a1652c23be839d2e1722cecc29",
+      "rev": "944ef13cc8d8fe8b846c91f36041c8dfb85ca000",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "markview.nvim": {
@@ -40,56 +40,60 @@
       "rev": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65",
       "src": "https://github.com/mason-org/mason.nvim"
     },
+    "mini-git": {
+      "rev": "a007cc40a4585c4f54787ddcf07295c2689daeb4",
+      "src": "https://github.com/echasnovski/mini-git"
+    },
     "mini.ai": {
-      "rev": "4b0a6207341d895b6cfe9bcb1e4d3e8607bfe4f4",
+      "rev": "43eb2074843950a3a25aae56a5f41362ec043bfa",
       "src": "https://github.com/echasnovski/mini.ai"
     },
     "mini.completion": {
-      "rev": "4f94cafdeef02bf3ef9997cd6862658801caa22c",
+      "rev": "09884c629cac1a8c999ffb6c57dc8424450aea5e",
       "src": "https://github.com/echasnovski/mini.completion"
     },
     "mini.extra": {
-      "rev": "0ccc67319240cf8712f5f614db50c262eccd9db3",
+      "rev": "ca1932c95c6e757c06d2cc133b87835a01d909dd",
       "src": "https://github.com/echasnovski/mini.extra"
     },
     "mini.files": {
-      "rev": "b4796e09eb103f9f2d1e00aa2dab3753b879b17b",
+      "rev": "ced297546b8fdb8e215d416d4753a735514a2fe0",
       "src": "https://github.com/echasnovski/mini.files"
     },
     "mini.hipatterns": {
-      "rev": "2c5dce6dc7443de814d16f7470549811ee86e664",
+      "rev": "a3ffba45e4119917b254c372df82e79f7d8c4aad",
       "src": "https://github.com/echasnovski/mini.hipatterns"
     },
     "mini.icons": {
-      "rev": "5b9076dae1bfbe47ba4a14bc8b967cde0ab5d77e",
+      "rev": "7fdae2443a0e2910015ca39ad74b50524ee682d3",
       "src": "https://github.com/echasnovski/mini.icons"
     },
     "mini.move": {
-      "rev": "b8ba0b77e91b5f0fe8e014e03f7f59799dec1d96",
+      "rev": "74d140143b1bb905c3d0aebcfc2f216fd237080e",
       "src": "https://github.com/echasnovski/mini.move"
     },
     "mini.operators": {
-      "rev": "65bc941bca46fb3f33bb2fdcc7b67417fb474a10",
+      "rev": "fccb5e3ef0cc319b217ed9c7db1a4672dd6b766c",
       "src": "https://github.com/echasnovski/mini.operators"
     },
     "mini.pairs": {
-      "rev": "b7fde3719340946feb75017ef9d75edebdeb0566",
+      "rev": "42387c7fe68fc0b6e95eaf37f1bb76e7bffaa0d9",
       "src": "https://github.com/echasnovski/mini.pairs"
     },
     "mini.pick": {
-      "rev": "fe079c2bd894a5ee70b62f23d819620ef40c4949",
+      "rev": "fd7e7efadddcec3f3d7f3b363a99aa44e7286c65",
       "src": "https://github.com/echasnovski/mini.pick"
     },
     "mini.snippets": {
-      "rev": "c7a5fd5e767dcc732940f59f2a83c64ea7346a3e",
+      "rev": "8e3acd41bd7ee8f89967c83bacc93871b98a14aa",
       "src": "https://github.com/echasnovski/mini.snippets"
     },
     "mini.surround": {
-      "rev": "d205d1741d1fcc1f3117b4e839bf00f74ad72fa2",
+      "rev": "2715e04bea3ec9244f15b421dc5b18c0fe326210",
       "src": "https://github.com/echasnovski/mini.surround"
     },
     "mini.trailspace": {
-      "rev": "27acb69562a4742256ab3e4b0127391fcb49dbb3",
+      "rev": "b362246495d18c29b4545a8f1c47f627f8011b7c",
       "src": "https://github.com/echasnovski/mini.trailspace"
     },
     "neogen": {
@@ -105,7 +109,7 @@
       "src": "https://github.com/jose-elias-alvarez/null-ls.nvim"
     },
     "nvim": {
-      "rev": "a7788416689dbefea659d9e9415c87926b0ba5d8",
+      "rev": "16408d203973da7e43fab87c6f9d3bf7fa98fa8b",
       "src": "https://github.com/catppuccin/nvim"
     },
     "nvim-conan": {
@@ -117,7 +121,7 @@
       "src": "https://github.com/mfussenegger/nvim-dap"
     },
     "nvim-dap-ui": {
-      "rev": "f5b6673f374626515401c5bc51b005f784a4f252",
+      "rev": "d9770a55188bb34c2bdce7d90a6151181beb6966",
       "src": "https://github.com/rcarriga/nvim-dap-ui"
     },
     "nvim-dap-virtual-text": {
@@ -125,7 +129,7 @@
       "src": "https://github.com/theHamsta/nvim-dap-virtual-text"
     },
     "nvim-lspconfig": {
-      "rev": "16812abf0e8d8175155f26143a8504e8253e92b0",
+      "rev": "9ccd58a7949091c0cc2777d4e92a45a209c808c1",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-nio": {
@@ -133,7 +137,7 @@
       "src": "https://github.com/nvim-neotest/nvim-nio"
     },
     "nvim-treesitter": {
-      "rev": "7caec274fd19c12b55902a5b795100d21531391f",
+      "rev": "4916d6592ede8c07973490d9322f187e07dfefac",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
     },
@@ -142,7 +146,7 @@
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "overseer.nvim": {
-      "rev": "a2194447f4c5a1baf95139c5c7b539fa7b0d012f",
+      "rev": "f818eefff81f4b12fb7cf236f1b6c16768a2fcbc",
       "src": "https://github.com/stevearc/overseer.nvim"
     },
     "plenary.nvim": {
