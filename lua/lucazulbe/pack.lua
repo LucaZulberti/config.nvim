@@ -34,6 +34,9 @@ vim.pack.add({
     { src = gh("echasnovski/mini.icons") },
     { src = gh("echasnovski/mini.trailspace") },
 
+    -- Picker
+    { src = gh("alexpasmantier/tv.nvim") },
+
     -- Treesitter and UI
     { src = gh("nvim-treesitter/nvim-treesitter"), version = 'main' },
     { src = gh("j-hui/fidget.nvim") },
@@ -73,7 +76,10 @@ require("rose-pine").setup({
     variant = "moon",
 })
 
+-- Fuzzy finders and more utilities
 require("oil").setup()
+require("lucazulbe.pack.tv")
+require("lucazulbe.pack.mini")
 
 require("nvim-treesitter").install { "lua", "vim", "bash", "fish", "c", "cpp" }
 
@@ -88,7 +94,6 @@ require("neogen").setup()
 -- Load local formatter and CMake/DAP integration modules.
 require("lucazulbe.pack.conform")
 require("lucazulbe.pack.cmake-dap")
-require("lucazulbe.pack.mini")
 
 require("typst-preview").setup()
 

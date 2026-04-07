@@ -161,6 +161,10 @@
       "rev": "cfb85dcf7f822b79224e9e6aef9e8c794211b20b",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
     },
+    "tv.nvim": {
+      "rev": "c0603ca8f31299c83deaa9a24a63d67116db25cd",
+      "src": "https://github.com/alexpasmantier/tv.nvim"
+    },
     "typst-preview.nvim": {
       "rev": "87db18b8d19c8b0eed399f52e4c527ce5afe4817",
       "src": "https://github.com/chomosuke/typst-preview.nvim"
