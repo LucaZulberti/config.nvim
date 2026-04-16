@@ -7,6 +7,9 @@ local gh = function(x) return 'https://github.com/' .. x end
 -- -------------------
 
 vim.pack.add({
+    -- Dependency for some plugins
+    { src = gh("nvim-lua/plenary.nvim") },
+
     -- Colorschemes
     { src = gh("rose-pine/neovim") },
     { src = gh("catppuccin/nvim") },
@@ -28,17 +31,20 @@ vim.pack.add({
     { src = gh("echasnovski/mini.hipatterns") },
     { src = gh("echasnovski/mini.move") },
     { src = gh("echasnovski/mini.pairs") },
-    { src = gh("echasnovski/mini.pick") },
     { src = gh("echasnovski/mini.files") },
     { src = gh("echasnovski/mini.extra") },
     { src = gh("echasnovski/mini.icons") },
     { src = gh("echasnovski/mini.trailspace") },
 
-    -- Picker
-    { src = gh("alexpasmantier/tv.nvim") },
+    -- Telescope picker
+    { src = gh("nvim-telescope/telescope.nvim") },
+    { src = gh("nvim-telescope/telescope-symbols.nvim") },
+    { src = gh("nvim-telescope/telescope-live-grep-args.nvim") },
+    { src = gh("nvim-telescope/telescope-frecency.nvim") },
+    { src = gh("nvim-telescope/telescope-file-browser.nvim") },
 
     -- Treesitter and UI
-    { src = gh("nvim-treesitter/nvim-treesitter"), version = 'main' },
+    { src = gh("nvim-treesitter/nvim-treesitter"),             version = 'main' },
     { src = gh("j-hui/fidget.nvim") },
 
     -- LSP and Formatter
@@ -78,7 +84,8 @@ require("rose-pine").setup({
 
 -- Fuzzy finders and more utilities
 require("oil").setup()
-require("lucazulbe.pack.tv")
+-- require("lucazulbe.pack.tv")
+require("lucazulbe.pack.telescope")
 require("lucazulbe.pack.mini")
 
 require("nvim-treesitter").install { "lua", "vim", "bash", "fish", "c", "cpp" }

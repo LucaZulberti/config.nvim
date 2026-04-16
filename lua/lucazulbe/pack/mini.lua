@@ -34,28 +34,10 @@ require("mini.hipatterns").setup({
     },
 })
 
-require("mini.pick").setup()
 require("mini.files").setup()
 require("mini.extra").setup()
 require("mini.icons").setup()
 require("mini.trailspace").setup()
-
--- rmap("n", "<leader>pf", ":Pick files<CR>", "[Mini.Pick] Files")
-rmap("n", "<leader>ph", ":Pick help<CR>", "[Mini.Pick] Help")
-rmap("n", "<leader>pd", ":Pick diagnostic<CR>", "[Mini.Pick] Diagnostic")
--- rmap("n", "<leader>pe", ":Pick explorer<CR>", "[Mini.Pick] Explorer")
--- rmap("n", "<leader>ps", ":Pick grep_live<CR>", "[Mini.Pick] Grep Live")
--- rmap("n", "<leader>pa", ":Pick grep<CR>", "[Mini.Pick] Grep")
--- rmap("n", "<leader>pgf", ":Pick git_files<CR>", "[Mini.Pick] Git Files")
--- rmap("n", "<leader>pgl", ":Pick git_commits<CR>", "[Mini.Pick] Git Log")
--- rmap("n", "<leader>pgh", ":Pick git_hunks<CR>", "[Mini.Pick] Git Hunks")
-rmap("n", "<leader>plq", ":Pick list scope='quickfix'<CR>", "[Mini.Pick] Quickfix List")
-rmap("n", "<leader>pll", ":Pick list scope='location'<CR>", "[Mini.Pick] Location List")
-rmap("n", "<leader>plj", ":Pick list scope='jump'<CR>", "[Mini.Pick] Jump List")
-rmap("n", "<leader>plc", ":Pick list scope='change'<CR>", "[Mini.Pick] Change List")
-rmap("n", "<leader>pm", ":Pick marks<CR>", "[Mini.Pick] Marks")
-rmap("n", "<leader>pr", ":Pick registers<CR>", "[Mini.Pick] Registers")
-rmap("n", "<leader>pk", ":Pick keymaps<CR>", "[Mini.Pick] Keymaps")
 
 rmap("n", "<leader>f", function()
     -- Open the mini.files file explorer rooted at the current context.
