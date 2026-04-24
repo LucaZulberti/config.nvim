@@ -281,6 +281,115 @@ local function clear_result_list(quick)
     end
 end
 
+---Return project files respecting .gitignore.
+---
+---Uses:
+---  git ls-files --cached --others --exclude-standard
+---
+---This includes tracked files and untracked non-ignored files, while excluding
+---ignored paths such as node_modules when they are listed in .gitignore.
+---@return string[]
+local function get_gitignored_file_list()
+    local files = vim.fn.systemlist({
+        "git",
+        "ls-files",
+        "--cached",
+        "--others",
+        "--exclude-standard",
+    })
+
+    if vim.v.shell_error ~= 0 then
+        -- Fallback: ripgrep also respects .gitignore by default.
+        -- --files lists files instead of matches.
+        files = vim.fn.systemlist({
+            "rg",
+            "--files",
+            "--hidden",
+            "--glob",
+            "!.git",
+        })
+
+        if vim.v.shell_error ~= 0 then
+            vim.notify(
+                "Cannot build project file list with git or rg",
+                vim.log.levels.ERROR
+            )
+            return {}
+        end
+    end
+
+    return vim.tbl_filter(function(file)
+        return file ~= nil and file ~= ""
+    end, files)
+end
+
+---Append vimgrep/lvimgrep results over a file list in chunks.
+---@param quick boolean
+---@param search_pattern string
+---@param files string[]
+---@return boolean
+local function run_vimgrep_on_files(quick, search_pattern, files)
+    clear_result_list(quick)
+
+    local grep_cmd_first = quick and "vimgrep" or "lvimgrep"
+    local grep_cmd_add = quick and "vimgrepadd" or "lvimgrepadd"
+
+    local grep_pattern = escape_for_delim(search_pattern, "/")
+
+    -- Keep chunks small enough to avoid excessive Ex command length.
+    local chunk_size = 100
+    local first = true
+
+    for i = 1, #files, chunk_size do
+        local chunk = {}
+
+        for j = i, math.min(i + chunk_size - 1, #files) do
+            table.insert(chunk, vim.fn.fnameescape(files[j]))
+        end
+
+        local cmd_name = first and grep_cmd_first or grep_cmd_add
+        local cmd = string.format(
+            "%s /%s/gj %s",
+            cmd_name,
+            grep_pattern,
+            table.concat(chunk, " ")
+        )
+
+        local ok, err = pcall(vim.cmd, cmd)
+
+        if not ok then
+            local err_s = tostring(err)
+
+            -- A chunk with no matches is fine. Keep scanning later chunks.
+            if not err_s:match("E480: No match:") then
+                clear_result_list(quick)
+
+                if err_s:match("E54:") or err_s:match("E55:") then
+                    vim.notify("Invalid Vim regex: " .. search_pattern, vim.log.levels.WARN)
+                    return false
+                end
+
+                vim.notify("Search failed: " .. err_s, vim.log.levels.ERROR)
+                return false
+            end
+        end
+
+        first = false
+    end
+
+    local items = get_result_list(quick)
+    if vim.tbl_isempty(items) then
+        clear_result_list(quick)
+        vim.notify(
+            quick and "No matches found in project files" or "No matches found in current file",
+            vim.log.levels.WARN
+        )
+        return false
+    end
+
+    return true
+end
+
 ---Warn when any matched file is open and modified in memory.
 ---@param quick boolean True for quickfix, false for location list.
 ---@return boolean proceed True when the operation may continue.
@@ -334,31 +443,34 @@ local function warn_if_modified_matches(quick)
 end
 
 ---Run :vimgrep or :lvimgrep and populate the corresponding result list.
----@param quick boolean True for quickfix across files, false for location list in current file.
+---@param quick boolean True for quickfix across project files, false for location list in current file.
 ---@param search_pattern string Vim regex pattern.
 ---@return boolean ok True when matches were found and the list is non-empty.
 local function run_vimgrep_safe(quick, search_pattern)
-    -- Select the grep command and target scope based on the requested mode.
-    local grep_cmd = quick and "vimgrep" or "lvimgrep"
-    local target = quick and "**/*" or "%"
+    if quick then
+        local files = get_gitignored_file_list()
 
-    -- Escape only the Ex delimiter. The pattern itself remains a Vim regex.
+        if vim.tbl_isempty(files) then
+            clear_result_list(true)
+            vim.notify("No project files found", vim.log.levels.WARN)
+            return false
+        end
+
+        return run_vimgrep_on_files(true, search_pattern, files)
+    end
+
+    -- Current-file mode stays simple.
     local grep_pattern = escape_for_delim(search_pattern, "/")
-    local cmd = string.format("%s /%s/gj %s", grep_cmd, grep_pattern, target)
+    local cmd = string.format("lvimgrep /%s/gj %%", grep_pattern)
 
-    -- Catch command errors such as "no match" or invalid regex syntax.
     local ok, err = pcall(vim.cmd, cmd)
     if not ok then
         local err_s = tostring(err)
 
-        -- Clear the list immediately so old matches cannot survive a failed run.
-        clear_result_list(quick)
+        clear_result_list(false)
 
         if err_s:match("E480: No match:") then
-            vim.notify(
-                quick and "No matches found in all files" or "No matches found in current file",
-                vim.log.levels.WARN
-            )
+            vim.notify("No matches found in current file", vim.log.levels.WARN)
             return false
         end
 
@@ -371,14 +483,10 @@ local function run_vimgrep_safe(quick, search_pattern)
         return false
     end
 
-    -- Defensively reject an empty list even when the command itself succeeded.
-    local items = get_result_list(quick)
+    local items = get_result_list(false)
     if vim.tbl_isempty(items) then
-        clear_result_list(quick)
-        vim.notify(
-            quick and "No matches found in all files" or "No matches found in current file",
-            vim.log.levels.WARN
-        )
+        clear_result_list(false)
+        vim.notify("No matches found in current file", vim.log.levels.WARN)
         return false
     end
 
